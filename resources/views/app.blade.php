@@ -10,27 +10,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
-<body class="antialiased">
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-md-6" id="app">
+<body>
+
+            <div id="app">
                 <!-- Asegúrate de usar kebab-case para el nombre del componente -->
-                <notas-component
-                    title="Mi Nota"
-                    description="Esta es la descripción de la nota."
-                    creation-date="2024-09-30"
-                    user="Juan Pérez"
-                    :tags="['trabajo', 'importante']"
-                    expiration-date="2024-10-05"
-                    image="https://via.placeholder.com/150"
-                />
+                <router-view></router-view> <!-- Aquí se cargarán las rutas de Vue -->
             </div>
-        </div>
-    </div>
+
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMO/0F2XkXy98kSxtx79+v+qA3qIlz6K0bM23c" crossorigin="anonymous">
+
+
 </body>
+<style>
+
+</style>
+
 </html>
