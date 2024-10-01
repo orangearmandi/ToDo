@@ -6,12 +6,15 @@ use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 class NoteController extends Controller
 {
+
+
     public function index()
     {
-        // Devuelve todas las notas en formato JSON
-        return response()->json(Note::all(), 200);
+        // Devuelve solo las notas del usuario autenticado
+        return response()->json(Note::where('user_id', auth()->user()->id)->get(), 200);
     }
 
     public function store(Request $request)
@@ -31,7 +34,7 @@ class NoteController extends Controller
         // Asignar valores a las propiedades
         $note->title = $request->title;
         $note->description = $request->description;
-        $note->user = $request->user;
+        $note->user = auth()->user()->id;
         $note->tags = $request->tags;
         $note->due_date = $request->due_date;
 
