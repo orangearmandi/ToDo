@@ -1,39 +1,41 @@
 <template>
-    <div class="full-width-container">
-      <h1 class="mb-4">Crear Nota</h1>
-      <form @submit.prevent="createNote" class="bg-light rounded shadow">
-        <div class="form-group mb-3">
+    <SidebarMenu />
+    <div class="container">
+      <h1 class="page-title">Crear Nota</h1>
+      <button @click="goToNotes" class="btn btn-secondary back-button">Volver a Notas</button>
+      <form @submit.prevent="createNote" class="note-form">
+        <div class="form-group">
           <label for="title">Título</label>
-          <input v-model="note.title" type="text" class="form-control" id="title" placeholder="Título" required />
+          <input v-model="note.title" type="text" class="form-control" id="title" placeholder="Introduce el título" required />
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group">
           <label for="description">Descripción</label>
-          <textarea v-model="note.description" class="form-control" id="description" placeholder="Descripción" required></textarea>
+          <textarea v-model="note.description" class="form-control" id="description" placeholder="Escribe la descripción" required></textarea>
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group">
           <label for="user">Usuario</label>
           <input v-model="note.user" type="text" class="form-control" id="user" placeholder="Usuario" required readonly />
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group">
           <label for="tags">Etiquetas (separadas por comas)</label>
-          <input v-model="note.tags" type="text" class="form-control" id="tags" placeholder="Etiquetas" required />
+          <input v-model="note.tags" type="text" class="form-control" id="tags" placeholder="Introduce etiquetas" required />
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group">
           <label for="due_date">Fecha de Vencimiento</label>
           <input v-model="note.due_date" type="date" class="form-control" id="due_date" required />
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group">
           <label for="image">Cargar Imagen</label>
           <input type="file" class="form-control" id="image" @change="onFileChange" />
         </div>
 
-        <button type="submit" class="btn btn-primary">Crear Nota</button>
-        <div v-if="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div> <!-- Mensaje de error -->
+        <button type="submit" class="btn btn-primary create-button">Crear Nota</button>
+        <div v-if="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
       </form>
     </div>
   </template>
@@ -52,20 +54,22 @@
           due_date: '',
           image: null,
         },
-        errorMessage: '', // Para manejar mensajes de error
+        errorMessage: '',
       };
     },
     created() {
-      this.getUser(); // Obtener el usuario autenticado al cargar el componente
+      this.getUser();
     },
     methods: {
-      // Obtener el usuario autenticado
+      goToNotes() {
+        this.$router.push('/notes');
+      },
+
       async getUser() {
         const token = localStorage.getItem('token');
-        console.log(token);
         if (!token) {
-          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
-          this.$router.push('/'); // Redirigir al login
+          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
+          this.$router.push('/');
           return;
         }
 
@@ -75,24 +79,23 @@
               Authorization: `Bearer ${token}`,
             },
           });
-          this.note.user = response.data.id; // Asignar el ID del usuario al campo user
+          this.note.user = response.data.id;
         } catch (error) {
           console.error('Error fetching user:', error);
-          this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.'; // Mensaje de error
+          this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.';
         }
       },
 
       onFileChange(event) {
         const file = event.target.files[0];
-        this.note.image = file; // Guardamos el archivo
+        this.note.image = file;
       },
 
-      // Crear la nota
       async createNote() {
         const token = localStorage.getItem('token');
         if (!token) {
-          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
-          this.$router.push('/notes'); // Redirigir al login
+          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
+          this.$router.push('/notes');
           return;
         }
 
@@ -108,10 +111,10 @@
               Authorization: `Bearer ${token}`,
             },
           });
-          this.$router.push('/notes'); // Redirigir a notas
+          this.$router.push('/notes');
         } catch (error) {
           console.error('Error creating note:', error);
-          this.errorMessage = 'Error al crear la nota. Por favor, intenta nuevamente.'; // Mensaje de error
+          this.errorMessage = 'Error al crear la nota. Por favor, intenta nuevamente.';
         }
       },
     },
@@ -119,20 +122,64 @@
   </script>
 
   <style scoped>
-  .full-width-container {
-    width: 100%;
-    padding: 20px; /* Espaciado alrededor del formulario */
+  .container {
+    max-width: 600px; /* Ajustar el ancho máximo */
+    margin: 50px auto; /* Centrar el contenedor */
+    padding: 20px; /* Espaciado interno */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra para el contenedor */
+    background-color: #ffffff; /* Fondo blanco */
   }
 
-  .bg-light {
-    background-color: #f8f9fa !important; /* Fondo claro */
+  .page-title {
+    text-align: center; /* Centrar el título */
+    margin-bottom: 20px; /* Espaciado inferior */
+    color: #333; /* Color del texto */
+    font-size: 2rem; /* Tamaño del texto */
   }
 
-  .shadow {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  .back-button {
+    display: block; /* Hacer que el botón ocupe todo el ancho */
+    margin-bottom: 20px; /* Espaciado inferior */
+  }
+
+  .note-form {
+    display: flex; /* Usar flexbox para el formulario */
+    flex-direction: column; /* Apilar los elementos */
+  }
+
+  .form-group {
+    margin-bottom: 15px; /* Espaciado inferior entre grupos de formulario */
   }
 
   .form-control {
-    width: 100%; /* Asegúrate de que los campos se extiendan a todo lo ancho */
+    padding: 12px; /* Espaciado interno en los campos */
+    border: 1px solid #ccc; /* Borde gris claro */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: border-color 0.3s; /* Transición para el borde */
+  }
+
+  .form-control:focus {
+    border-color: #007bff; /* Color del borde al enfocar */
+    outline: none; /* Sin borde por defecto */
+  }
+
+  .create-button {
+    padding: 12px; /* Espaciado interno en el botón */
+    background-color: #007bff; /* Color de fondo azul */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar cursor al pasar por encima */
+    font-size: 16px; /* Tamaño del texto */
+    transition: background-color 0.3s; /* Transición para el color de fondo */
+  }
+
+  .create-button:hover {
+    background-color: #0056b3; /* Color al pasar el mouse */
+  }
+
+  .alert {
+    margin-top: 15px; /* Espaciado superior en la alerta */
   }
   </style>

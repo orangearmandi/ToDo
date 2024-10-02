@@ -1,24 +1,30 @@
 <template>
     <div class="container">
+<SidebarMenu></SidebarMenu>
       <h1>Notas</h1>
       <div class="note-list">
         <div class="note-item" v-for="note in notes" :key="note.id">
-          <img :src="`/storage/${note.image_path}`" alt="Imagen de nota" v-if="note.image_path" class="note-image" />
+          <img
+            :src="`/storage/${note.image_path}`"
+            alt="Imagen de nota"
+            v-if="note.image_path"
+            class="note-image"
+          />
 
           <div class="note-content">
             <h2>{{ note.title }}</h2>
 
-            <!-- Descripción truncada con "Ver más/Ver menos" -->
-            <p class="note-description">
-              {{ isExpanded[note.id] ? note.description : truncateText(note.description) }}
-            </p>
-            <button v-if="note.description && note.description.length > 20" class="btn-toggle" @click="toggleExpand(note.id)">
-              {{ isExpanded[note.id] ? 'Ver menos' : 'Ver más' }}
-            </button>
+            <!-- Cambiar el párrafo por un textarea -->
+            <textarea
+              v-model="note.description"
+              rows="4"
+              cols="50"
+              readonly
+              class="note-description"
+            ></textarea>
 
             <div class="note-meta">
               <p><strong>Usuario:</strong> {{ note.user }}</p>
-              <!-- Etiquetas separadas con estilo de chip -->
               <div class="tags">
                 <span class="tag" v-for="tag in note.tags.split(',')" :key="tag">{{ tag.trim() }}</span>
               </div>
@@ -27,26 +33,31 @@
           </div>
 
           <div class="note-actions">
-            <router-link :to="{ name: 'NoteEdit', params: { id: note.id } }" class="btn-edit">Editar</router-link>
-            <button class="btn-delete" @click="deleteNote(note.id)">Eliminar</button>
+            <router-link :to="{ name: 'NoteEdit', params: { id: note.id } }" class="btn-edit">
+              <i class="fas fa-pencil-alt"></i>
+            </router-link>
+            <button class="btn-delete" @click="deleteNote(note.id)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Botón flotante para crear una nueva nota -->
-      <router-link to="/create" class="btn-create-float">+</router-link>
+      <router-link to="/create" class="btn-create-float">
+      <i class="fas fa-plus"></i>
+    </router-link>
     </div>
   </template>
 
   <script>
   import axios from 'axios';
 
+
   export default {
     data() {
       return {
         notes: [],
         userId: null,
-        isExpanded: {}, // Control para expandir/contraer descripciones
         errorMessage: '', // Mensaje de error
       };
     },
@@ -55,7 +66,7 @@
     },
     methods: {
       async getUser() {
-        const token = this.$store.state.token || localStorage.getItem('token'); // Obtener el token de Vuex o localStorage
+        const token = this.$store.state.token || localStorage.getItem('token');
         if (!token) {
           this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
           this.$router.push('/'); // Redirigir al login
@@ -96,14 +107,6 @@
         }
       },
 
-      toggleExpand(noteId) {
-        this.$set(this.isExpanded, noteId, !this.isExpanded[noteId]); // Alternar expansión de nota
-      },
-
-      truncateText(text) {
-        return text.length > 20 ? text.substring(0, 20) + '...' : text; // Truncar texto si es necesario
-      },
-
       async deleteNote(noteId) {
         const token = localStorage.getItem('token');
         if (confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
@@ -132,8 +135,16 @@
   };
   </script>
 
+  <style scoped>
+  .note-description {
+    width: 90%; /* Ajustar el ancho del textarea */
+    resize: none; /* Evitar que el textarea se redimensione */
+    margin-bottom: 10px; /* Espaciado inferior */
+    border: 1px solid #ccc; /* Borde gris */
+    padding: 5px; /* Espaciado interno */
+  }
 
-<style scoped>.container {
+  .container {
     display: contents;
     max-width: 1200px;
     margin: 50px auto;
@@ -216,6 +227,7 @@
   .note-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center; /* Centrar verticalmente */
     margin-top: 15px;
   }
 
@@ -229,6 +241,8 @@
     font-size: 1rem;
     border: none; /* Elimina bordes */
     outline: none; /* Elimina líneas de enfoque */
+    display: flex;              /* Usar flexbox */
+    align-items: center;         /* Centrar verticalmente */
   }
 
   .btn-edit {
@@ -262,42 +276,25 @@
     transform: translateY(-3px);
   }
 
-  .btn-create-float {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #28a745;
-    color: #fff;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5rem;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-  }
 
-  .btn-create-float:hover {
-    background-color: #218838;
-    transform: scale(1.2);
-  }
-
-  button, .btn-edit, .btn-delete, .btn-toggle {
-  display: flex;              /* Usar flexbox */
-  justify-content: center;     /* Centrar horizontalmente */
-  align-items: center;         /* Centrar verticalmente */
-  text-align: center;          /* Centrar el texto dentro del botón */
-  text-decoration: none;
-  outline: none;               /* Remueve líneas de enfoque */
-  border: none;                /* Remueve cualquier borde */
-  width: 100%;                 /* Asegura que el botón ocupe todo el ancho */
-  height: 50px;                /* Establece una altura para una apariencia consistente */
-  cursor: pointer;             /* Muestra el cursor de mano en hover */
+.btn-create-float {
+  position: fixed; /* Mantener el botón en la parte inferior derecha */
+  bottom: 20px; /* Espaciado desde el fondo */
+  right: 20px; /* Espaciado desde la derecha */
+  background-color: #28a745; /* Color de fondo verde */
+  color: white; /* Color del ícono */
+  border: none; /* Sin borde */
+  border-radius: 50%; /* Forma circular */
+  width: 60px; /* Ancho del botón */
+  height: 60px; /* Alto del botón */
+  display: flex; /* Flexbox para centrar el ícono */
+  align-items: center; /* Alinear verticalmente */
+  justify-content: center; /* Alinear horizontalmente */
+  font-size: 24px; /* Tamaño del ícono */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra */
 }
 
-
-
-</style>
+.btn-create-float:hover {
+  background-color: #218838; /* Color más oscuro al pasar el mouse */
+}
+  </style>

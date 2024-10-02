@@ -26,17 +26,17 @@ Route::get('user', [AuthController::class, 'user'])->middleware('auth:api');
 
 
 // Obtener todas las notas (GET /api/notes)
-Route::get('notes/{id}', [NoteController::class, 'index'])->middleware('auth:api');
+Route::get('notes/{id}', [NoteController::class, 'index']);
 
 
 // Crear una nueva nota (POST /api/notes)
 Route::post('notes', [NoteController::class, 'store']);
 
 // Obtener una nota específica (GET /api/notes/{note})
-Route::get('notes/{note}', [NoteController::class, 'show']);
+Route::get('notes/edit/{note}', [NoteController::class, 'show']);
 
 // Actualizar una nota existente (PUT /api/notes/{note})
-Route::put('notes/{note}', [NoteController::class, 'update']);
+Route::put('notes/edit/{note}', [NoteController::class, 'update']);
 
 // Eliminar una nota (DELETE /api/notes/{note})
 Route::delete('notes/{note}', [NoteController::class, 'destroy']);

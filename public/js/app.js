@@ -22315,14 +22315,16 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         due_date: '',
         image: null
       },
-      errorMessage: '' // Para manejar mensajes de error
+      errorMessage: ''
     };
   },
   created: function created() {
-    this.getUser(); // Obtener el usuario autenticado al cargar el componente
+    this.getUser();
   },
   methods: {
-    // Obtener el usuario autenticado
+    goToNotes: function goToNotes() {
+      this.$router.push('/notes');
+    },
     getUser: function getUser() {
       var _this = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -22331,44 +22333,42 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
           while (1) switch (_context.prev = _context.next) {
             case 0:
               token = localStorage.getItem('token');
-              console.log(token);
               if (token) {
-                _context.next = 6;
+                _context.next = 5;
                 break;
               }
-              _this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
-              _this.$router.push('/'); // Redirigir al login
+              _this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
+              _this.$router.push('/');
               return _context.abrupt("return");
-            case 6:
-              _context.prev = 6;
-              _context.next = 9;
+            case 5:
+              _context.prev = 5;
+              _context.next = 8;
               return axios__WEBPACK_IMPORTED_MODULE_0___default().get('http://localhost:8000/api/user', {
                 headers: {
                   Authorization: "Bearer ".concat(token)
                 }
               });
-            case 9:
+            case 8:
               response = _context.sent;
-              _this.note.user = response.data.id; // Asignar el ID del usuario al campo user
-              _context.next = 17;
+              _this.note.user = response.data.id;
+              _context.next = 16;
               break;
-            case 13:
-              _context.prev = 13;
-              _context.t0 = _context["catch"](6);
+            case 12:
+              _context.prev = 12;
+              _context.t0 = _context["catch"](5);
               console.error('Error fetching user:', _context.t0);
-              _this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.'; // Mensaje de error
-            case 17:
+              _this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.';
+            case 16:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[6, 13]]);
+        }, _callee, null, [[5, 12]]);
       }))();
     },
     onFileChange: function onFileChange(event) {
       var file = event.target.files[0];
-      this.note.image = file; // Guardamos el archivo
+      this.note.image = file;
     },
-    // Crear la nota
     createNote: function createNote() {
       var _this2 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
@@ -22381,8 +22381,8 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 _context2.next = 5;
                 break;
               }
-              _this2.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
-              _this2.$router.push('/notes'); // Redirigir al login
+              _this2.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
+              _this2.$router.push('/notes');
               return _context2.abrupt("return");
             case 5:
               formData = new FormData();
@@ -22398,14 +22398,14 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 }
               });
             case 10:
-              _this2.$router.push('/notes'); // Redirigir a notas
+              _this2.$router.push('/notes');
               _context2.next = 17;
               break;
             case 13:
               _context2.prev = 13;
               _context2.t0 = _context2["catch"](7);
               console.error('Error creating note:', _context2.t0);
-              _this2.errorMessage = 'Error al crear la nota. Por favor, intenta nuevamente.'; // Mensaje de error
+              _this2.errorMessage = 'Error al crear la nota. Por favor, intenta nuevamente.';
             case 17:
             case "end":
               return _context2.stop();
@@ -22443,9 +22443,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         title: '',
         description: '',
         user: '',
+        // Mantener el ID del usuario pero no permitir que sea editable
         tags: '',
-        due_date: '',
-        image_path: ''
+        due_date: ''
       }
     };
   },
@@ -22460,33 +22460,78 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get("http://localhost:8000/api/notes/".concat(_this.$route.params.id));
-            case 2:
+              _context.prev = 0;
+              _context.next = 3;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get("http://localhost:8000/api/notes/edit/".concat(_this.$route.params.id));
+            case 3:
               response = _context.sent;
               _this.note = response.data;
-            case 4:
+              _context.next = 11;
+              break;
+            case 7:
+              _context.prev = 7;
+              _context.t0 = _context["catch"](0);
+              console.error("Error fetching note:", _context.t0);
+              alert("Error fetching note: " + _context.t0.message);
+            case 11:
             case "end":
               return _context.stop();
           }
-        }, _callee);
+        }, _callee, null, [[0, 7]]);
       }))();
     },
     updateNote: function updateNote() {
       var _this2 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        var token;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              _context2.next = 2;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().put("http://localhost:8000/api/notes/".concat(_this2.$route.params.id), _this2.note);
-            case 2:
-              _this2.$router.push('/');
+              if (!(!_this2.note.title || !_this2.note.description || !_this2.note.tags || !_this2.note.due_date)) {
+                _context2.next = 3;
+                break;
+              }
+              alert("Por favor, complete todos los campos.");
+              return _context2.abrupt("return");
             case 3:
+              // Recuperar el token del almacenamiento local
+              token = localStorage.getItem('token');
+              if (token) {
+                _context2.next = 8;
+                break;
+              }
+              alert("No estás autenticado. Por favor, inicia sesión.");
+              _this2.$router.push('/notes'); // Redirigir si no hay autenticación
+              return _context2.abrupt("return");
+            case 8:
+              _context2.prev = 8;
+              _context2.next = 11;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().put("http://localhost:8000/api/notes/edit/".concat(_this2.$route.params.id), {
+                title: _this2.note.title,
+                description: _this2.note.description,
+                user: _this2.note.user,
+                // Enviar el ID del usuario sin modificar
+                tags: _this2.note.tags,
+                due_date: _this2.note.due_date
+              }, {
+                headers: {
+                  Authorization: "Bearer ".concat(token) // Agregar el token de autorización
+                }
+              });
+            case 11:
+              _this2.$router.push('/'); // Redirigir a la página de inicio de sesión
+              _context2.next = 18;
+              break;
+            case 14:
+              _context2.prev = 14;
+              _context2.t0 = _context2["catch"](8);
+              console.error("Error updating note:", _context2.t0);
+              alert("Error updating note: " + _context2.t0.message);
+            case 18:
             case "end":
               return _context2.stop();
           }
-        }, _callee2);
+        }, _callee2, null, [[8, 14]]);
       }))();
     }
   }
@@ -22517,8 +22562,6 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     return {
       notes: [],
       userId: null,
-      isExpanded: {},
-      // Control para expandir/contraer descripciones
       errorMessage: '' // Mensaje de error
     };
   },
@@ -22533,7 +22576,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              token = _this.$store.state.token || localStorage.getItem('token'); // Obtener el token de Vuex o localStorage
+              token = _this.$store.state.token || localStorage.getItem('token');
               if (token) {
                 _context.next = 5;
                 break;
@@ -22605,12 +22648,6 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
           }
         }, _callee2, null, [[5, 12]]);
       }))();
-    },
-    toggleExpand: function toggleExpand(noteId) {
-      this.$set(this.isExpanded, noteId, !this.isExpanded[noteId]); // Alternar expansión de nota
-    },
-    truncateText: function truncateText(text) {
-      return text.length > 20 ? text.substring(0, 20) + '...' : text; // Truncar texto si es necesario
     },
     deleteNote: function deleteNote(noteId) {
       var _this3 = this;
@@ -22702,7 +22739,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 password_confirmation: _this.password_confirmation
               });
             case 3:
-              _this.$router.push('/login'); // Redirigir a Login después del registro
+              _this.$router.push('/'); // Redirigir a Login después del registro
               _context.next = 10;
               break;
             case 6:
@@ -22720,6 +22757,74 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     },
     goToLogin: function goToLogin() {
       this.$router.push('/'); // Redirigir a la página de inicio de sesión
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=script&lang=js":
+/*!**********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=script&lang=js ***!
+  \**********************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    return {
+      menuOpen: false // Estado para controlar la apertura del menú
+    };
+  },
+  methods: {
+    toggleMenu: function toggleMenu() {
+      this.menuOpen = !this.menuOpen; // Cambia el estado del menú
+    },
+    logout: function logout() {
+      var _this = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        var token;
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              token = localStorage.getItem('token');
+              _context.prev = 1;
+              _context.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().post('http://localhost:8000/api/logout', {}, {
+                headers: {
+                  Authorization: "Bearer ".concat(token)
+                }
+              });
+            case 4:
+              localStorage.removeItem('token'); // Limpiar el token
+              _this.$router.push('/'); // Redirigir al inicio de sesión
+              _context.next = 11;
+              break;
+            case 8:
+              _context.prev = 8;
+              _context.t0 = _context["catch"](1);
+              console.error('Error al cerrar sesión:', _context.t0);
+            case 11:
+              _context.prev = 11;
+              _this.menuOpen = false; // Cierra el menú al cerrar sesión
+              return _context.finish(11);
+            case 14:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, null, [[1, 8, 11, 14]]);
+      }))();
     }
   }
 });
@@ -22746,8 +22851,16 @@ var _hoisted_2 = {
   key: 0,
   "class": "error-message"
 };
+var _hoisted_3 = {
+  "class": "register-link"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, "Login", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+  var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, "Login", -1 /* HOISTED */)), _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Microsoft_To-Do_icon.svg",
+    alt: "Logo",
+    "class": "logo"
+  }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
     onSubmit: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.login && $options.login.apply($options, arguments);
     }, ["prevent"])),
@@ -22773,7 +22886,15 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.password]]), _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "submit",
     "class": "login-button"
-  }, "Login", -1 /* HOISTED */)), $data.errorMessage ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("p", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errorMessage), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Mensaje de error ")], 32 /* NEED_HYDRATION */)]);
+  }, "Login", -1 /* HOISTED */)), $data.errorMessage ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("p", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errorMessage), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Mensaje de error ")], 32 /* NEED_HYDRATION */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("¿No tienes una cuenta? ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    to: "/register",
+    "class": "register-button"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return _cache[4] || (_cache[4] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Regístrate aquí")]);
+    }),
+    _: 1 /* STABLE */
+  })])])]);
 }
 
 /***/ }),
@@ -22792,63 +22913,69 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
 var _hoisted_1 = {
-  "class": "full-width-container"
+  "class": "container"
 };
 var _hoisted_2 = {
-  "class": "form-group mb-3"
+  "class": "form-group"
 };
 var _hoisted_3 = {
-  "class": "form-group mb-3"
+  "class": "form-group"
 };
 var _hoisted_4 = {
-  "class": "form-group mb-3"
+  "class": "form-group"
 };
 var _hoisted_5 = {
-  "class": "form-group mb-3"
+  "class": "form-group"
 };
 var _hoisted_6 = {
-  "class": "form-group mb-3"
+  "class": "form-group"
 };
 var _hoisted_7 = {
-  "class": "form-group mb-3"
+  "class": "form-group"
 };
 var _hoisted_8 = {
   key: 0,
   "class": "alert alert-danger mt-3"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
-    "class": "mb-4"
-  }, "Crear Nota", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
-    onSubmit: _cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+  var _component_SidebarMenu = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("SidebarMenu");
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SidebarMenu), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
+    "class": "page-title"
+  }, "Crear Nota", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[0] || (_cache[0] = function () {
+      return $options.goToNotes && $options.goToNotes.apply($options, arguments);
+    }),
+    "class": "btn btn-secondary back-button"
+  }, "Volver a Notas"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+    onSubmit: _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.createNote && $options.createNote.apply($options, arguments);
     }, ["prevent"])),
-    "class": "bg-light rounded shadow"
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "class": "note-form"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "title"
   }, "Título", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return $data.note.title = $event;
     }),
     type: "text",
     "class": "form-control",
     id: "title",
-    placeholder: "Título",
+    placeholder: "Introduce el título",
     required: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.title]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.title]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "description"
   }, "Descripción", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
-    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
       return $data.note.description = $event;
     }),
     "class": "form-control",
     id: "description",
-    placeholder: "Descripción",
+    placeholder: "Escribe la descripción",
     required: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.description]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.description]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "user"
   }, "Usuario", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $data.note.user = $event;
     }),
     type: "text",
@@ -22857,40 +22984,40 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Usuario",
     required: "",
     readonly: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.user]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.user]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "tags"
   }, "Etiquetas (separadas por comas)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $data.note.tags = $event;
     }),
     type: "text",
     "class": "form-control",
     id: "tags",
-    placeholder: "Etiquetas",
+    placeholder: "Introduce etiquetas",
     required: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.tags]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.tags]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "due_date"
   }, "Fecha de Vencimiento", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
       return $data.note.due_date = $event;
     }),
     type: "date",
     "class": "form-control",
     id: "due_date",
     required: ""
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.due_date]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.due_date]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "image"
   }, "Cargar Imagen", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "file",
     "class": "form-control",
     id: "image",
-    onChange: _cache[5] || (_cache[5] = function () {
+    onChange: _cache[6] || (_cache[6] = function () {
       return $options.onFileChange && $options.onFileChange.apply($options, arguments);
     })
-  }, null, 32 /* NEED_HYDRATION */)]), _cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 32 /* NEED_HYDRATION */)]), _cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "submit",
-    "class": "btn btn-primary"
-  }, "Crear Nota", -1 /* HOISTED */)), $data.errorMessage ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errorMessage), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Mensaje de error ")], 32 /* NEED_HYDRATION */)]);
+    "class": "btn btn-primary create-button"
+  }, "Crear Nota", -1 /* HOISTED */)), $data.errorMessage ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.errorMessage), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 32 /* NEED_HYDRATION */)])], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
@@ -22911,11 +23038,14 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "edit-note-container"
 };
+var _hoisted_2 = {
+  "class": "user-field"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
     "class": "title"
   }, "Editar Nota", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
-    onSubmit: _cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onSubmit: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.updateNote && $options.updateNote.apply($options, arguments);
     }, ["prevent"])),
     "class": "edit-note-form"
@@ -22933,34 +23063,21 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Descripción",
     required: "",
     "class": "textarea-field"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.description]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.description]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Eliminar el campo de usuario del formulario "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, "Usuario ID: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.note.user), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Solo mostrar el ID del usuario "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
-      return $data.note.user = $event;
-    }),
-    placeholder: "Usuario",
-    required: "",
-    "class": "input-field"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.user]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $data.note.tags = $event;
     }),
     placeholder: "Etiquetas (separadas por comas)",
     required: "",
     "class": "input-field"
   }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.tags]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $data.note.due_date = $event;
     }),
     type: "date",
     required: "",
     "class": "input-field"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.due_date]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
-      return $data.note.image_path = $event;
-    }),
-    placeholder: "Ruta de imagen",
-    "class": "input-field"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.image_path]]), _cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.note.due_date]]), _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "submit",
     "class": "update-button"
   }, "Actualizar Nota", -1 /* HOISTED */))], 32 /* NEED_HYDRATION */)]);
@@ -22997,23 +23114,21 @@ var _hoisted_3 = ["src"];
 var _hoisted_4 = {
   "class": "note-content"
 };
-var _hoisted_5 = {
-  "class": "note-description"
-};
-var _hoisted_6 = ["onClick"];
-var _hoisted_7 = {
+var _hoisted_5 = ["onUpdate:modelValue"];
+var _hoisted_6 = {
   "class": "note-meta"
 };
-var _hoisted_8 = {
+var _hoisted_7 = {
   "class": "tags"
 };
-var _hoisted_9 = {
+var _hoisted_8 = {
   "class": "note-actions"
 };
-var _hoisted_10 = ["onClick"];
+var _hoisted_9 = ["onClick"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
+  var _component_SidebarMenu = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("SidebarMenu");
   var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", null, "Notas", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.notes, function (note) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SidebarMenu), _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", null, "Notas", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.notes, function (note) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       "class": "note-item",
       key: note.id
@@ -23022,18 +23137,20 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       src: "/storage/".concat(note.image_path),
       alt: "Imagen de nota",
       "class": "note-image"
-    }, null, 8 /* PROPS */, _hoisted_3)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Descripción truncada con \"Ver más/Ver menos\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isExpanded[note.id] ? note.description : $options.truncateText(note.description)), 1 /* TEXT */), note.description && note.description.length > 20 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-      key: 0,
-      "class": "btn-toggle",
-      onClick: function onClick($event) {
-        return $options.toggleExpand(note.id);
-      }
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isExpanded[note.id] ? 'Ver menos' : 'Ver más'), 9 /* TEXT, PROPS */, _hoisted_6)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Usuario:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.user), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Etiquetas separadas con estilo de chip "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(note.tags.split(','), function (tag) {
+    }, null, 8 /* PROPS */, _hoisted_3)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Cambiar el párrafo por un textarea "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
+      "onUpdate:modelValue": function onUpdateModelValue($event) {
+        return note.description = $event;
+      },
+      rows: "4",
+      cols: "50",
+      readonly: "",
+      "class": "note-description"
+    }, null, 8 /* PROPS */, _hoisted_5), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, note.description]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Usuario:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.user), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(note.tags.split(','), function (tag) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", {
         "class": "tag",
         key: tag
       }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(tag.trim()), 1 /* TEXT */);
-    }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Fecha de Vencimiento:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.due_date), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Fecha de Vencimiento:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.due_date), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
       to: {
         name: 'NoteEdit',
         params: {
@@ -23043,7 +23160,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "class": "btn-edit"
     }, {
       "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-        return _toConsumableArray(_cache[2] || (_cache[2] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Editar")]));
+        return _toConsumableArray(_cache[2] || (_cache[2] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+          "class": "fas fa-pencil-alt"
+        }, null, -1 /* HOISTED */)]));
       }),
       _: 2 /* DYNAMIC */
     }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
@@ -23051,13 +23170,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $options.deleteNote(note.id);
       }
-    }, "Eliminar", 8 /* PROPS */, _hoisted_10)])]);
-  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Botón flotante para crear una nueva nota "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    }, _toConsumableArray(_cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "fas fa-trash-alt"
+    }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_9)])]);
+  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
     to: "/create",
     "class": "btn-create-float"
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return _cache[3] || (_cache[3] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("+")]);
+      return _cache[4] || (_cache[4] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+        "class": "fas fa-plus"
+      }, null, -1 /* HOISTED */)]);
     }),
     _: 1 /* STABLE */
   })]);
@@ -23089,7 +23212,11 @@ var _hoisted_3 = {
   "class": "login-prompt"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, "Register", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, "Registro de ToDo", -1 /* HOISTED */)), _cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+    src: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Microsoft_To-Do_icon.svg",
+    alt: "Logo",
+    "class": "logo"
+  }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
     onSubmit: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.register && $options.register.apply($options, arguments);
     }, ["prevent"])),
@@ -23138,6 +23265,46 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=template&id=7bc860aa&scoped=true":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=template&id=7bc860aa&scoped=true ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+
+var _hoisted_1 = {
+  key: 0,
+  "class": "sidebar"
+};
+var _hoisted_2 = {
+  "class": "menu-items"
+};
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[0] || (_cache[0] = function () {
+      return $options.toggleMenu && $options.toggleMenu.apply($options, arguments);
+    }),
+    "class": "btn-toggle-menu"
+  }, "☰"), $data.menuOpen ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "btn-close",
+    onClick: _cache[1] || (_cache[1] = function () {
+      return $options.toggleMenu && $options.toggleMenu.apply($options, arguments);
+    })
+  }, "✖"), _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("br", null, null, -1 /* HOISTED */)), _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("br", null, null, -1 /* HOISTED */)), _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("br", null, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", {
+    onClick: _cache[2] || (_cache[2] = function () {
+      return $options.logout && $options.logout.apply($options, arguments);
+    })
+  }, "Cerrar Sesión")])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
+}
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -23147,21 +23314,24 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
-/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./router */ "./resources/js/router.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./store */ "./resources/js/store.js");
+/* harmony import */ var _components_menu_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/menu.vue */ "./resources/js/components/menu.vue");
+/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./router */ "./resources/js/router.js");
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./store */ "./resources/js/store.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
  // Importa createApp de vue
+
+
  // Importa el enrutador
  // Importa el store
-
 var app = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createApp)({}); // Crea la aplicación
 
 // Si tienes componentes globales que quieres registrar, lo puedes hacer aquí
 // Ejemplo: app.component('example-component', require('./components/ExampleComponent.vue').default);
 
 // Usa el enrutador y el store en la aplicación
-app.use(_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
-app.use(_store__WEBPACK_IMPORTED_MODULE_2__["default"]);
+app.component('SidebarMenu', _components_menu_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
+app.use(_router__WEBPACK_IMPORTED_MODULE_2__["default"]);
+app.use(_store__WEBPACK_IMPORTED_MODULE_3__["default"]);
 
 // Monta la aplicación en el elemento con el ID 'app'
 app.mount('#app');
@@ -38487,7 +38657,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n  /* Estilos opcionales */\n.login-container[data-v-6bdc8b8e] {\n    max-width: 400px;\n    margin: 50px auto;\n    padding: 20px;\n    border-radius: 8px;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n    background-color: #f9f9f9;\n}\nh2[data-v-6bdc8b8e] {\n    text-align: center;\n    margin-bottom: 20px;\n    color: #333;\n}\n.login-form[data-v-6bdc8b8e] {\n    display: flex;\n    flex-direction: column;\n}\n.input-field[data-v-6bdc8b8e] {\n    padding: 10px;\n    margin-bottom: 10px;\n    border: 1px solid #ddd;\n    border-radius: 4px;\n    font-size: 16px;\n}\n.input-field[data-v-6bdc8b8e]:focus {\n    border-color: #007bff;\n    outline: none;\n}\n.login-button[data-v-6bdc8b8e] {\n    padding: 10px;\n    background-color: #007bff;\n    color: white;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 16px;\n}\n.login-button[data-v-6bdc8b8e]:hover {\n    background-color: #0056b3;\n}\n.error-message[data-v-6bdc8b8e] {\n    color: red;\n    text-align: center;\n    margin-top: 10px;\n}\n  ", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n  /* Estilos opcionales */\n.login-container[data-v-6bdc8b8e] {\n    max-width: 400px;\n    margin: 50px auto;\n    padding: 20px;\n    border-radius: 8px;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n    background-color: #f9f9f9;\n}\n.logo[data-v-6bdc8b8e] {\n    display: block;\n    margin: 0 auto 20px; /* Centrar logo y agregar espaciado inferior */\n    width: 60px; /* Ajusta el tamaño del logo según sea necesario */\n}\nh2[data-v-6bdc8b8e] {\n    text-align: center;\n    margin-bottom: 20px;\n    color: #333;\n}\n.login-form[data-v-6bdc8b8e] {\n    display: flex;\n    flex-direction: column;\n}\n.input-field[data-v-6bdc8b8e] {\n    padding: 10px;\n    margin-bottom: 10px;\n    border: 1px solid #ddd;\n    border-radius: 4px;\n    font-size: 16px;\n}\n.input-field[data-v-6bdc8b8e]:focus {\n    border-color: #007bff;\n    outline: none;\n}\n.login-button[data-v-6bdc8b8e] {\n    padding: 10px;\n    background-color: #007bff;\n    color: white;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 16px;\n}\n.login-button[data-v-6bdc8b8e]:hover {\n    background-color: #0056b3;\n}\n.error-message[data-v-6bdc8b8e] {\n    color: red;\n    text-align: center;\n    margin-top: 10px;\n}\n.register-link[data-v-6bdc8b8e] {\n    text-align: center;\n    margin-top: 15px; /* Espaciado superior */\n}\n.register-button[data-v-6bdc8b8e] {\n    color: #007bff;\n    text-decoration: none; /* Sin subrayado */\n}\n.register-button[data-v-6bdc8b8e]:hover {\n    text-decoration: underline; /* Subrayado al pasar el mouse */\n}\n  ", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38511,7 +38681,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.full-width-container[data-v-06e63539] {\n    width: 100%;\n    padding: 20px; /* Espaciado alrededor del formulario */\n}\n.bg-light[data-v-06e63539] {\n    background-color: #f8f9fa !important; /* Fondo claro */\n}\n.shadow[data-v-06e63539] {\n    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n}\n.form-control[data-v-06e63539] {\n    width: 100%; /* Asegúrate de que los campos se extiendan a todo lo ancho */\n}\n  ", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.container[data-v-06e63539] {\n    max-width: 600px; /* Ajustar el ancho máximo */\n    margin: 50px auto; /* Centrar el contenedor */\n    padding: 20px; /* Espaciado interno */\n    border-radius: 8px; /* Bordes redondeados */\n    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra para el contenedor */\n    background-color: #ffffff; /* Fondo blanco */\n}\n.page-title[data-v-06e63539] {\n    text-align: center; /* Centrar el título */\n    margin-bottom: 20px; /* Espaciado inferior */\n    color: #333; /* Color del texto */\n    font-size: 2rem; /* Tamaño del texto */\n}\n.back-button[data-v-06e63539] {\n    display: block; /* Hacer que el botón ocupe todo el ancho */\n    margin-bottom: 20px; /* Espaciado inferior */\n}\n.note-form[data-v-06e63539] {\n    display: flex; /* Usar flexbox para el formulario */\n    flex-direction: column; /* Apilar los elementos */\n}\n.form-group[data-v-06e63539] {\n    margin-bottom: 15px; /* Espaciado inferior entre grupos de formulario */\n}\n.form-control[data-v-06e63539] {\n    padding: 12px; /* Espaciado interno en los campos */\n    border: 1px solid #ccc; /* Borde gris claro */\n    border-radius: 5px; /* Bordes redondeados */\n    transition: border-color 0.3s; /* Transición para el borde */\n}\n.form-control[data-v-06e63539]:focus {\n    border-color: #007bff; /* Color del borde al enfocar */\n    outline: none; /* Sin borde por defecto */\n}\n.create-button[data-v-06e63539] {\n    padding: 12px; /* Espaciado interno en el botón */\n    background-color: #007bff; /* Color de fondo azul */\n    color: white; /* Color del texto */\n    border: none; /* Sin borde */\n    border-radius: 5px; /* Bordes redondeados */\n    cursor: pointer; /* Cambiar cursor al pasar por encima */\n    font-size: 16px; /* Tamaño del texto */\n    transition: background-color 0.3s; /* Transición para el color de fondo */\n}\n.create-button[data-v-06e63539]:hover {\n    background-color: #0056b3; /* Color al pasar el mouse */\n}\n.alert[data-v-06e63539] {\n    margin-top: 15px; /* Espaciado superior en la alerta */\n}\n  ", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38535,7 +38705,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.edit-note-container[data-v-e9671ef2] {\n    max-width: 500px;\n    margin: 50px auto;\n    padding: 20px;\n    border-radius: 8px;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n    background-color: #f9f9f9;\n}\n.title[data-v-e9671ef2] {\n    text-align: center;\n    margin-bottom: 20px;\n    color: #333;\n}\n.edit-note-form[data-v-e9671ef2] {\n    display: flex;\n    flex-direction: column;\n}\n.input-field[data-v-e9671ef2],\n  .textarea-field[data-v-e9671ef2] {\n    padding: 12px;\n    margin-bottom: 15px;\n    border: 1px solid #ddd;\n    border-radius: 4px;\n    font-size: 16px;\n}\n.textarea-field[data-v-e9671ef2] {\n    resize: vertical;\n}\n.input-field[data-v-e9671ef2]:focus,\n  .textarea-field[data-v-e9671ef2]:focus {\n    border-color: #007bff;\n    outline: none;\n}\n.update-button[data-v-e9671ef2] {\n    padding: 12px;\n    background-color: #007bff;\n    color: white;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 16px;\n}\n.update-button[data-v-e9671ef2]:hover {\n    background-color: #0056b3;\n}\n  ", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.edit-note-container[data-v-e9671ef2] {\n    max-width: 500px;\n    margin: 50px auto;\n    padding: 20px;\n    border-radius: 8px;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n    background-color: #f9f9f9;\n}\n.title[data-v-e9671ef2] {\n    text-align: center;\n    margin-bottom: 20px;\n    color: #333;\n}\n.edit-note-form[data-v-e9671ef2] {\n    display: flex;\n    flex-direction: column;\n}\n.input-field[data-v-e9671ef2],\n  .textarea-field[data-v-e9671ef2] {\n    padding: 12px;\n    margin-bottom: 15px;\n    border: 1px solid #ddd;\n    border-radius: 4px;\n    font-size: 16px;\n}\n.textarea-field[data-v-e9671ef2] {\n    resize: vertical;\n}\n.input-field[data-v-e9671ef2]:focus,\n  .textarea-field[data-v-e9671ef2]:focus {\n    border-color: #007bff;\n    outline: none;\n}\n.update-button[data-v-e9671ef2] {\n    padding: 12px;\n    background-color: #007bff;\n    color: white;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 16px;\n}\n.update-button[data-v-e9671ef2]:hover {\n    background-color: #0056b3;\n}\n.user-field[data-v-e9671ef2] {\n    margin-bottom: 15px;\n    font-size: 16px;\n    color: #555;\n}\n  ", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38559,7 +38729,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".container[data-v-7c04491b] {\n    display: contents;\n    max-width: 1200px;\n    margin: 50px auto;\n    padding: 20px;\n    background-color: #fff;\n    border-radius: 10px;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n}\n.note-list[data-v-7c04491b] {\n    display: flex;\n    flex-direction: column;\n    gap: 20px;\n}\n.note-item[data-v-7c04491b] {\n    display: flex;\n    background-color: #f9f9f9;\n    padding: 15px;\n    border: 1px solid #e0e0e0;\n    border-radius: 15px;\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);\n    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;\n}\n.note-item[data-v-7c04491b]:hover {\n    transform: translateY(-5px);\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);\n}\n.note-image[data-v-7c04491b] {\n    width: 120px;\n    height: auto;\n    margin-right: 15px;\n    border-radius: 15px;\n}\n.note-content[data-v-7c04491b] {\n    flex: 1;\n}\nh2[data-v-7c04491b] {\n    font-size: 1.6rem;\n    color: #333;\n    margin-bottom: 10px;\n}\n.note-description[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #555;\n    margin-bottom: 10px;\n    line-height: 1.6;\n}\n.note-meta p[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #777;\n    margin: 5px 0;\n}\n.tags[data-v-7c04491b] {\n    margin: 10px 0;\n}\n.tag[data-v-7c04491b] {\n    display: inline-block;\n    background-color: #e0f7fa;\n    color: #00796b;\n    padding: 8px 16px;\n    margin-right: 8px;\n    border-radius: 25px;\n    font-size: 1rem;\n    transition: background-color 0.3s;\n}\n.tag[data-v-7c04491b]:hover {\n    background-color: #b2ebf2;\n}\n.note-actions[data-v-7c04491b] {\n    display: flex;\n    justify-content: space-between;\n    margin-top: 15px;\n}\n.btn-edit[data-v-7c04491b],\n  .btn-delete[data-v-7c04491b],\n  .btn-toggle[data-v-7c04491b] {\n    padding: 12px 20px;\n    border-radius: 25px;\n    cursor: pointer;\n    transition: background-color 0.3s ease, transform 0.2s ease;\n    font-size: 1rem;\n    border: none; /* Elimina bordes */\n    outline: none; /* Elimina líneas de enfoque */\n}\n.btn-edit[data-v-7c04491b] {\n    background-color: #007bff;\n    color: #fff;\n}\n.btn-edit[data-v-7c04491b]:hover {\n    background-color: #0069d9;\n    transform: translateY(-3px);\n}\n.btn-delete[data-v-7c04491b] {\n    background-color: #dc3545;\n    color: #fff;\n}\n.btn-delete[data-v-7c04491b]:hover {\n    background-color: #c82333;\n    transform: translateY(-3px);\n}\n.btn-toggle[data-v-7c04491b] {\n    background-color: #6c757d;\n    color: white;\n    margin-top: 5px;\n}\n.btn-toggle[data-v-7c04491b]:hover {\n    background-color: #5a6268;\n    transform: translateY(-3px);\n}\n.btn-create-float[data-v-7c04491b] {\n    position: fixed;\n    bottom: 20px;\n    right: 20px;\n    background-color: #28a745;\n    color: #fff;\n    width: 65px;\n    height: 65px;\n    border-radius: 50%;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    font-size: 2.5rem;\n    text-decoration: none;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);\n    transition: background-color 0.3s ease, transform 0.3s ease;\n}\n.btn-create-float[data-v-7c04491b]:hover {\n    background-color: #218838;\n    transform: scale(1.2);\n}\nbutton[data-v-7c04491b], .btn-edit[data-v-7c04491b], .btn-delete[data-v-7c04491b], .btn-toggle[data-v-7c04491b] {\n  display: flex;              /* Usar flexbox */\n  justify-content: center;     /* Centrar horizontalmente */\n  align-items: center;         /* Centrar verticalmente */\n  text-align: center;          /* Centrar el texto dentro del botón */\n  text-decoration: none;\n  outline: none;               /* Remueve líneas de enfoque */\n  border: none;                /* Remueve cualquier borde */\n  width: 100%;                 /* Asegura que el botón ocupe todo el ancho */\n  height: 50px;                /* Establece una altura para una apariencia consistente */\n  cursor: pointer;             /* Muestra el cursor de mano en hover */\n}\n\n\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.note-description[data-v-7c04491b] {\n    width: 90%; /* Ajustar el ancho del textarea */\n    resize: none; /* Evitar que el textarea se redimensione */\n    margin-bottom: 10px; /* Espaciado inferior */\n    border: 1px solid #ccc; /* Borde gris */\n    padding: 5px; /* Espaciado interno */\n}\n.container[data-v-7c04491b] {\n    display: contents;\n    max-width: 1200px;\n    margin: 50px auto;\n    padding: 20px;\n    background-color: #fff;\n    border-radius: 10px;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n}\n.note-list[data-v-7c04491b] {\n    display: flex;\n    flex-direction: column;\n    gap: 20px;\n}\n.note-item[data-v-7c04491b] {\n    display: flex;\n    background-color: #f9f9f9;\n    padding: 15px;\n    border: 1px solid #e0e0e0;\n    border-radius: 15px;\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);\n    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;\n}\n.note-item[data-v-7c04491b]:hover {\n    transform: translateY(-5px);\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);\n}\n.note-image[data-v-7c04491b] {\n    width: 120px;\n    height: auto;\n    margin-right: 15px;\n    border-radius: 15px;\n}\n.note-content[data-v-7c04491b] {\n    flex: 1;\n}\nh2[data-v-7c04491b] {\n    font-size: 1.6rem;\n    color: #333;\n    margin-bottom: 10px;\n}\n.note-description[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #555;\n    margin-bottom: 10px;\n    line-height: 1.6;\n}\n.note-meta p[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #777;\n    margin: 5px 0;\n}\n.tags[data-v-7c04491b] {\n    margin: 10px 0;\n}\n.tag[data-v-7c04491b] {\n    display: inline-block;\n    background-color: #e0f7fa;\n    color: #00796b;\n    padding: 8px 16px;\n    margin-right: 8px;\n    border-radius: 25px;\n    font-size: 1rem;\n    transition: background-color 0.3s;\n}\n.tag[data-v-7c04491b]:hover {\n    background-color: #b2ebf2;\n}\n.note-actions[data-v-7c04491b] {\n    display: flex;\n    justify-content: space-between;\n    align-items: center; /* Centrar verticalmente */\n    margin-top: 15px;\n}\n.btn-edit[data-v-7c04491b],\n  .btn-delete[data-v-7c04491b],\n  .btn-toggle[data-v-7c04491b] {\n    padding: 12px 20px;\n    border-radius: 25px;\n    cursor: pointer;\n    transition: background-color 0.3s ease, transform 0.2s ease;\n    font-size: 1rem;\n    border: none; /* Elimina bordes */\n    outline: none; /* Elimina líneas de enfoque */\n    display: flex;              /* Usar flexbox */\n    align-items: center;         /* Centrar verticalmente */\n}\n.btn-edit[data-v-7c04491b] {\n    background-color: #007bff;\n    color: #fff;\n}\n.btn-edit[data-v-7c04491b]:hover {\n    background-color: #0069d9;\n    transform: translateY(-3px);\n}\n.btn-delete[data-v-7c04491b] {\n    background-color: #dc3545;\n    color: #fff;\n}\n.btn-delete[data-v-7c04491b]:hover {\n    background-color: #c82333;\n    transform: translateY(-3px);\n}\n.btn-toggle[data-v-7c04491b] {\n    background-color: #6c757d;\n    color: white;\n    margin-top: 5px;\n}\n.btn-toggle[data-v-7c04491b]:hover {\n    background-color: #5a6268;\n    transform: translateY(-3px);\n}\n.btn-create-float[data-v-7c04491b] {\n  position: fixed; /* Mantener el botón en la parte inferior derecha */\n  bottom: 20px; /* Espaciado desde el fondo */\n  right: 20px; /* Espaciado desde la derecha */\n  background-color: #28a745; /* Color de fondo verde */\n  color: white; /* Color del ícono */\n  border: none; /* Sin borde */\n  border-radius: 50%; /* Forma circular */\n  width: 60px; /* Ancho del botón */\n  height: 60px; /* Alto del botón */\n  display: flex; /* Flexbox para centrar el ícono */\n  align-items: center; /* Alinear verticalmente */\n  justify-content: center; /* Alinear horizontalmente */\n  font-size: 24px; /* Tamaño del ícono */\n  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra */\n}\n.btn-create-float[data-v-7c04491b]:hover {\n  background-color: #218838; /* Color más oscuro al pasar el mouse */\n}\n  ", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38583,7 +38753,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.register-container[data-v-97358ae4] {\n    max-width: 400px;\n    margin: 50px auto;\n    padding: 20px;\n    border-radius: 8px;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n    background-color: #f9f9f9;\n}\nh2[data-v-97358ae4] {\n    text-align: center;\n    margin-bottom: 20px;\n    color: #333;\n}\n.register-form[data-v-97358ae4] {\n    display: flex;\n    flex-direction: column;\n}\n.input-field[data-v-97358ae4] {\n    padding: 10px;\n    margin-bottom: 10px;\n    border: 1px solid #ddd;\n    border-radius: 4px;\n    font-size: 16px;\n}\n.input-field[data-v-97358ae4]:focus {\n    border-color: #007bff;\n    outline: none;\n}\n.register-button[data-v-97358ae4] {\n    padding: 10px;\n    background-color: #007bff;\n    color: white;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 16px;\n}\n.register-button[data-v-97358ae4]:hover {\n    background-color: #0056b3;\n}\n.error-message[data-v-97358ae4] {\n    color: red;\n    text-align: center;\n    margin-top: 10px;\n}\n.login-prompt[data-v-97358ae4] {\n    text-align: center;\n    margin-top: 20px;\n}\n.login-button[data-v-97358ae4] {\n    background: none;\n    border: none;\n    color: #007bff;\n    cursor: pointer;\n    font-size: 16px;\n}\n.login-button[data-v-97358ae4]:hover {\n    text-decoration: underline;\n}\n  ", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.register-container[data-v-97358ae4] {\n    max-width: 400px;\n    margin: 50px auto;\n    padding: 20px;\n    border-radius: 8px;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n    background-color: #f9f9f9;\n    width: 90%; /* Para que el contenedor sea más ancho en pantallas pequeñas */\n}\n.logo[data-v-97358ae4] {\n    display: block;\n    margin: 0 auto 20px; /* Centrar logo y agregar espaciado inferior */\n    width: 60px; /* Ajusta el tamaño del logo según sea necesario */\n}\nh2[data-v-97358ae4] {\n    text-align: center;\n    margin-bottom: 20px;\n    color: #333;\n}\n.register-form[data-v-97358ae4] {\n    display: flex;\n    flex-direction: column;\n}\n.input-field[data-v-97358ae4] {\n    padding: 10px;\n    margin-bottom: 10px;\n    border: 1px solid #ddd;\n    border-radius: 4px;\n    font-size: 16px;\n    width: 100%; /* Asegúrate de que el campo de entrada ocupe todo el ancho disponible */\n}\n.input-field[data-v-97358ae4]:focus {\n    border-color: #007bff;\n    outline: none;\n}\n.register-button[data-v-97358ae4] {\n    padding: 10px;\n    background-color: #007bff;\n    color: white;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 16px;\n}\n.register-button[data-v-97358ae4]:hover {\n    background-color: #0056b3;\n}\n.error-message[data-v-97358ae4] {\n    color: red;\n    text-align: center;\n    margin-top: 10px;\n}\n.login-prompt[data-v-97358ae4] {\n    text-align: center;\n    margin-top: 20px;\n}\n.login-button[data-v-97358ae4] {\n    background: none;\n    border: none;\n    color: #007bff;\n    cursor: pointer;\n    font-size: 16px;\n}\n.login-button[data-v-97358ae4]:hover {\n    text-decoration: underline;\n}\n\n  /* Media queries para mayor responsividad */\n@media (max-width: 600px) {\n.register-container[data-v-97358ae4] {\n      padding: 15px; /* Reduce el padding en pantallas pequeñas */\n}\nh2[data-v-97358ae4] {\n      font-size: 1.5rem; /* Tamaño de fuente más pequeño para el título */\n}\n.input-field[data-v-97358ae4] {\n      font-size: 14px; /* Tamaño de fuente más pequeño para los campos de entrada */\n}\n.register-button[data-v-97358ae4],\n    .login-button[data-v-97358ae4] {\n      font-size: 14px; /* Tamaño de fuente más pequeño para los botones */\n}\n}\n  ", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/laravel-mix/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/laravel-mix/node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.sidebar[data-v-7bc860aa] {\n    position: fixed; /* Mantener el menú en una posición fija */\n    top: 0; /* Ajusta a la parte superior de la ventana */\n    right: 0; /* Mantener a la derecha */\n    width: 250px; /* Ancho del menú */\n    height: 100%; /* Altura completa */\n    background-color: #f8f9fa; /* Color de fondo del menú */\n    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Sombra del menú */\n    z-index: 9999; /* Un z-index alto para asegurar que esté encima de otros elementos */\n    padding: 20px; /* Espaciado interno */\n    transition: transform 0.3s ease; /* Transición suave al abrir/cerrar */\n}\n.btn-toggle-menu[data-v-7bc860aa] {\n    position: fixed; /* Mantener el botón en la parte superior derecha */\n    top: 20px; /* Espaciado desde la parte superior */\n    right: 20px; /* Espaciado desde la derecha */\n    background-color: #28a745; /* Color de fondo verde */\n    color: white; /* Color del ícono */\n    border: none; /* Sin borde */\n    border-radius: 50%; /* Bordes redondeados */\n    padding: 12px; /* Espaciado interno */\n    font-size: 24px; /* Tamaño del ícono */\n    cursor: pointer; /* Cambiar el cursor al pasar */\n    z-index: 10000; /* Asegurarse de que el botón esté por encima del menú */\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para profundidad */\n    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */\n}\n.btn-toggle-menu[data-v-7bc860aa]:hover {\n    background-color: #218838; /* Color más oscuro al pasar el mouse */\n    transform: scale(1.05); /* Efecto de aumento al pasar el mouse */\n}\n.menu-items[data-v-7bc860aa] {\n    list-style-type: none; /* Sin viñetas */\n    padding: 0; /* Sin espaciado */\n}\n.menu-items li[data-v-7bc860aa] {\n    margin-bottom: 15px; /* Espaciado entre elementos */\n}\n.menu-items li[data-v-7bc860aa]:hover {\n    color: #007bff; /* Color al pasar el mouse */\n    cursor: pointer; /* Cambia el cursor al pasar */\n}\n.btn-close[data-v-7bc860aa] {\n    background: none; /* Sin fondo */\n    border: none; /* Sin borde */\n    font-size: 24px; /* Tamaño del ícono */\n    cursor: pointer; /* Cambiar el cursor al pasar */\n    color: #dc3545; /* Color rojo para el botón de cerrar */\n}\n.btn-close[data-v-7bc860aa]:hover {\n    transform: scale(1.1); /* Efecto de aumento al pasar el mouse */\n}\n  ", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -58866,6 +59060,36 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_style_index_0_id_7bc860aa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css */ "./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_style_index_0_id_7bc860aa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_style_index_0_id_7bc860aa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
 /*!****************************************************************************!*\
   !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
@@ -59322,6 +59546,37 @@ if (false) {}
 
 /***/ }),
 
+/***/ "./resources/js/components/menu.vue":
+/*!******************************************!*\
+  !*** ./resources/js/components/menu.vue ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _menu_vue_vue_type_template_id_7bc860aa_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./menu.vue?vue&type=template&id=7bc860aa&scoped=true */ "./resources/js/components/menu.vue?vue&type=template&id=7bc860aa&scoped=true");
+/* harmony import */ var _menu_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./menu.vue?vue&type=script&lang=js */ "./resources/js/components/menu.vue?vue&type=script&lang=js");
+/* harmony import */ var _menu_vue_vue_type_style_index_0_id_7bc860aa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css */ "./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_menu_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_menu_vue_vue_type_template_id_7bc860aa_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-7bc860aa"],['__file',"resources/js/components/menu.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
 /***/ "./resources/js/components/Login.vue?vue&type=script&lang=js":
 /*!*******************************************************************!*\
   !*** ./resources/js/components/Login.vue?vue&type=script&lang=js ***!
@@ -59398,6 +59653,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_Register_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_Register_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Register.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/Register.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./resources/js/components/menu.vue?vue&type=script&lang=js":
+/*!******************************************************************!*\
+  !*** ./resources/js/components/menu.vue?vue&type=script&lang=js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./menu.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=script&lang=js");
  
 
 /***/ }),
@@ -59482,6 +59753,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/menu.vue?vue&type=template&id=7bc860aa&scoped=true":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/menu.vue?vue&type=template&id=7bc860aa&scoped=true ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_template_id_7bc860aa_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_template_id_7bc860aa_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./menu.vue?vue&type=template&id=7bc860aa&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=template&id=7bc860aa&scoped=true");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/Login.vue?vue&type=style&index=0&id=6bdc8b8e&scoped=true&lang=css":
 /*!***************************************************************************************************!*\
   !*** ./resources/js/components/Login.vue?vue&type=style&index=0&id=6bdc8b8e&scoped=true&lang=css ***!
@@ -59543,6 +59830,19 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_Register_vue_vue_type_style_index_0_id_97358ae4_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Register.vue?vue&type=style&index=0&id=97358ae4&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/Register.vue?vue&type=style&index=0&id=97358ae4&scoped=true&lang=css");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css ***!
+  \**************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_menu_vue_vue_type_style_index_0_id_7bc860aa_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css */ "./node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu.vue?vue&type=style&index=0&id=7bc860aa&scoped=true&lang=css");
 
 
 /***/ }),

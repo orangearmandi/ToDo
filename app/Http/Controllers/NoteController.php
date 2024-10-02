@@ -11,7 +11,7 @@ class NoteController extends Controller
     public function index($id)
     {
         // Obtener las notas del usuario con el ID proporcionado
-        $notes = Note::where('user', $id)->get(); // Asegúrate de que el campo que relaciona la nota con el usuario es 'user_id'
+        $notes = Note::where('user', $id)->get();
 
         if ($notes->isEmpty()) {
             return response()->json(['message' => 'No se encontraron notas para este usuario.'], 404);
@@ -29,7 +29,7 @@ class NoteController extends Controller
             'user' => 'required|string',
             'tags' => 'nullable|string',
             'due_date' => 'nullable|date',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de la imagen
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $note = new Note();
@@ -43,7 +43,6 @@ class NoteController extends Controller
 
         // Manejar la carga de la imagen
         if ($request->hasFile('image')) {
-            // Guardar la imagen y almacenar la ruta en el almacenamiento público
             $imagePath = $request->file('image')->store('images', 'public');
             $note->image_path = $imagePath;
         }
@@ -61,56 +60,40 @@ class NoteController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Validación de datos
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'user' => 'required|string',
-            'tags' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'title.required' => 'El título es obligatorio.',
-            'description.required' => 'La descripción es obligatoria.',
-            'user.required' => 'El usuario es obligatorio.',
-            'image.image' => 'El archivo debe ser una imagen.',
-            'image.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
-            'image.max' => 'La imagen no debe pesar más de 2MB.',
-        ]);
+{
+    // Validación de datos
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
 
+        'tags' => 'nullable|string',
+        'due_date' => 'nullable|date',
+    ], [
+        'title.required' => 'El título es obligatorio.',
+        'description.required' => 'La descripción es obligatoria.',
+
+    ]);
+
+    $note = Note::findOrFail($id);
+
+    // Asignar valores
+    $note->title = $request->title;
+    $note->description = $request->description;
+    $note->user = $request->user;
+    $note->tags = $request->tags;
+    $note->due_date = $request->due_date;
+
+    // Guardar la nota actualizada
+    $note->save();
+
+    return response()->json($note, 200);
+}
+
+    public function destroy($id)
+    {
+        // Encontrar la nota
         $note = Note::findOrFail($id);
 
-        // Asignar valores
-        $note->title = $request->title;
-        $note->description = $request->description;
-        $note->user = $request->user;
-        $note->tags = $request->tags;
-        $note->due_date = $request->due_date;
-
-        // Manejar la carga de la imagen
-        if ($request->hasFile('image')) {
-            // Eliminar la imagen anterior si existe
-            if ($note->image_path) {
-                $oldImagePath = 'public/' . $note->image_path;
-                if (Storage::exists($oldImagePath)) {
-                    Storage::delete($oldImagePath);
-                }
-            }
-
-            // Guardar la nueva imagen
-            $imagePath = $request->file('image')->store('images', 'public');
-            $note->image_path = $imagePath;
-        }
-
-        // Guardar la nota actualizada
-        $note->save();
-
-        return response()->json($note, 200);
-    }
-
-    public function destroy(Note $note)
-    {
         // Eliminar la imagen asociada
         if ($note->image_path) {
             $imagePath = 'public/' . $note->image_path;

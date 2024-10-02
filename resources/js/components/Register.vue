@@ -1,13 +1,13 @@
 <template>
     <div class="register-container">
-      <h2>Register</h2>
+      <h2>Registro de ToDo</h2>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Microsoft_To-Do_icon.svg"
+        alt="Logo"
+        class="logo"
+      />
       <form @submit.prevent="register" class="register-form">
-        <input
-          v-model="name"
-          placeholder="Name"
-          required
-          class="input-field"
-        />
+        <input v-model="name" placeholder="Name" required class="input-field" />
         <input
           v-model="email"
           type="email"
@@ -61,7 +61,7 @@
             password: this.password,
             password_confirmation: this.password_confirmation
           });
-          this.$router.push('/login'); // Redirigir a Login después del registro
+          this.$router.push('/'); // Redirigir a Login después del registro
         } catch (error) {
           // Manejo de errores
           this.errorMessage =
@@ -85,6 +85,13 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #f9f9f9;
+    width: 90%; /* Para que el contenedor sea más ancho en pantallas pequeñas */
+  }
+
+  .logo {
+    display: block;
+    margin: 0 auto 20px; /* Centrar logo y agregar espaciado inferior */
+    width: 60px; /* Ajusta el tamaño del logo según sea necesario */
   }
 
   h2 {
@@ -104,6 +111,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
+    width: 100%; /* Asegúrate de que el campo de entrada ocupe todo el ancho disponible */
   }
 
   .input-field:focus {
@@ -146,5 +154,25 @@
 
   .login-button:hover {
     text-decoration: underline;
+  }
+
+  /* Media queries para mayor responsividad */
+  @media (max-width: 600px) {
+    .register-container {
+      padding: 15px; /* Reduce el padding en pantallas pequeñas */
+    }
+
+    h2 {
+      font-size: 1.5rem; /* Tamaño de fuente más pequeño para el título */
+    }
+
+    .input-field {
+      font-size: 14px; /* Tamaño de fuente más pequeño para los campos de entrada */
+    }
+
+    .register-button,
+    .login-button {
+      font-size: 14px; /* Tamaño de fuente más pequeño para los botones */
+    }
   }
   </style>
