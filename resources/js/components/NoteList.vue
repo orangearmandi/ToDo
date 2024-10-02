@@ -50,21 +50,49 @@
       this.fetchNotes();
     },
     methods: {
-      async fetchNotes() {
-        try {
-          const response = await axios.get('http://localhost:8000/api/notes');
-          this.notes = response.data;
-        } catch (error) {
-          console.error('Error fetching notes:', error);
-        }
-      },
+        async fetchNotes() {
+    const token = this.$store.state.token; // Obtener el token desde Vuex
+    console.error('Token :', token);
+        console.log("tojen");
+
+    if (!token) {
+        alert('No estás autenticado. Por favor, inicia sesión.');
+        this.$router.push('/');
+        return;
+    }
+
+    try {
+        const response = await axios.get('http://localhost:8000/api/notes', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        this.notes = response.data;
+    } catch (error) {
+        this.handleApiError(error);
+    }
+},
+
+
       async deleteNote(noteId) {
+        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+
         if (confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
           try {
-            await axios.delete(`http://localhost:8000/api/notes/${noteId}`);
+
+            await axios.delete(`http://localhost:8000/api/notes/${noteId}`, {
+              headers: {
+                Authorization: `Bearer ${token}` // Enviar el token en la cabecera
+              }
+            });
             this.fetchNotes(); // Actualiza la lista de notas
           } catch (error) {
             console.error('Error deleting note:', error);
+            // Manejar errores, como redireccionar si el token es inválido
+            if (error.response && error.response.status === 401) {
+              alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+              this.$router.push('/login'); // Redirigir a la página de login
+            }
           }
         }
       },

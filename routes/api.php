@@ -17,13 +17,17 @@ use App\Http\Controllers\AuthController;
 
 
 
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+Route::get('user', [AuthController::class, 'user'])->middleware('auth:api');
 
 
 
 // Obtener todas las notas (GET /api/notes)
 Route::get('notes', [NoteController::class, 'index']);
+
 
 // Crear una nueva nota (POST /api/notes)
 Route::post('notes', [NoteController::class, 'store']);

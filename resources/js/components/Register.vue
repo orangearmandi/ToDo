@@ -32,6 +32,10 @@
         <button type="submit" class="register-button">Register</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Mensaje de error -->
       </form>
+      <p class="login-prompt">
+        ¿Ya tienes una cuenta?
+        <button @click="goToLogin" class="login-button">Volver a Login</button>
+      </p>
     </div>
   </template>
 
@@ -65,6 +69,9 @@
             'Error al registrarse. Inténtalo de nuevo.'; // Mostrar mensaje de error
           console.error('Error en el registro:', error.response.data); // Log detallado para depuración
         }
+      },
+      goToLogin() {
+        this.$router.push('/'); // Redirigir a la página de inicio de sesión
       }
     }
   };
@@ -122,5 +129,22 @@
     color: red;
     text-align: center;
     margin-top: 10px;
+  }
+
+  .login-prompt {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .login-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .login-button:hover {
+    text-decoration: underline;
   }
   </style>

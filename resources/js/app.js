@@ -1,27 +1,16 @@
 require('./bootstrap');
+import { createApp } from 'vue'; // Importa createApp de vue
 import router from './router'; // Importa el enrutador
+import store from './store'; // Importa el store
 
-window.Vue = require('vue').default;
+const app = createApp({}); // Crea la aplicación
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+// Si tienes componentes globales que quieres registrar, lo puedes hacer aquí
+// Ejemplo: app.component('example-component', require('./components/ExampleComponent.vue').default);
 
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+// Usa el enrutador y el store en la aplicación
+app.use(router);
+app.use(store);
 
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-const app = new Vue({
-    el: '#app',
-    router
-});
+// Monta la aplicación en el elemento con el ID 'app'
+app.mount('#app');

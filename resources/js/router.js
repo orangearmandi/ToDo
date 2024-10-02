@@ -1,83 +1,59 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import Login from './components/Login.vue';
 import NoteCreate from './components/NoteCreate.vue';
 import NoteEdit from './components/NoteEdit.vue';
 import NoteList from './components/NoteList.vue';
 import Register from './components/Register.vue';
-import api from './utils/axios'; // Importa la instancia de Axios
+import store from './store'; // Importa el store
 
-Vue.use(Router);
+// Función para verificar la autenticación
+// Función para verificar la autenticación
 
-const isAuthenticated = () => {
-  const token = localStorage.getItem('token');
-  return !!token; // Devuelve true si el token existe
-};
 
-const router = new Router({
-  routes: [
+// Definición de rutas
+// Definición de rutas
+const routes = [
     {
       path: '/',
+      name: 'Login',
+      component: Login,
+      beforeEnter: (to, from, next) => {
+        if (store.state.user) {
+          next('/notes'); // Redirigir a la lista de notas si el usuario ya está autenticado
+        } else {
+          next(); // De lo contrario, continuar a la página de login
+        }
+      },
+    },
+    {
+      path: '/notes',
       name: 'NoteList',
       component: NoteList,
-      beforeEnter: (to, from, next) => {
-        if (isAuthenticated()) {
-          next();
-        } else {
-          next('/login');
-        }
-      }
+
     },
     {
       path: '/create',
       name: 'NoteCreate',
       component: NoteCreate,
-      beforeEnter: (to, from, next) => {
-        if (isAuthenticated()) {
-          next();
-        } else {
-          next('/login');
-        }
-      }
+
     },
     {
       path: '/edit/:id',
       name: 'NoteEdit',
       component: NoteEdit,
-      beforeEnter: (to, from, next) => {
-        if (isAuthenticated()) {
-          next();
-        } else {
-          next('/login');
-        }
-      }
+
     },
     {
       path: '/register',
       name: 'Register',
-      component: Register
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login
+      component: Register,
     }
-  ]
-});
+  ];
 
-// Manejo de errores en la respuesta de Axios para redirigir
-api.interceptors.response.use(
-  response => {
-    return response;
-  },
-  error => {
-    // Manejo de errores de respuesta
-    if (error.response && error.response.status === 401) {
-      console.error('No autorizado, redirigiendo a login...');
-      router.push('/login'); // Redirige a la página de login
-    }
-    return Promise.reject(error);
-  }
-);
+  // Creación del enrutador
+  const router = createRouter({
+    history: createWebHistory(),
+    routes,
+  });
 
-export default router;
+  export default router;

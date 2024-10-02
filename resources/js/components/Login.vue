@@ -8,6 +8,7 @@
           placeholder="Email"
           required
           class="input-field"
+          aria-label="Email"
         />
         <input
           v-model="password"
@@ -15,6 +16,7 @@
           placeholder="Password"
           required
           class="input-field"
+          aria-label="Password"
         />
         <button type="submit" class="login-button">Login</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Mensaje de error -->
@@ -34,23 +36,27 @@
       };
     },
     methods: {
-      async login() {
-        try {
-          const response = await api.post('/login', {
-            email: this.email,
-            password: this.password
-          });
-          localStorage.setItem('token', response.data.token); // Guardar el token en el almacenamiento local
-          console.log('Token almacenado:', response.data.token); // Verifica que se haya guardado correctamente
-          this.$router.push('/'); // Redirigir a la lista de notas
-        } catch (error) {
-          // Manejo de errores
-          console.error('Error en el inicio de sesión:', error.response.data); // Log detallado
-          this.errorMessage =
-            error.response.data.message ||
-            'Error de inicio de sesión. Inténtalo de nuevo.'; // Mostrar mensaje de error
-        }
-      }
+        async login() {
+  try {
+    const response = await api.post('/login', {
+      email: this.email,
+      password: this.password
+    });
+
+    // Guarda el token en el localStorage
+    localStorage.setItem('token', response.data.access_token);
+    console.log('Token almacenado:', response.data.access_token); // Verifica que se haya guardado correctamente
+
+    // Redirigir a la lista de notas
+    this.$router.push('/notes'); // Cambia esto para que redirija a '/notes'
+  } catch (error) {
+    // Manejo de errores
+    console.error('Error en el inicio de sesión:', error.response.data); // Log detallado
+    this.errorMessage =
+      error.response.data.message ||
+      'Error de inicio de sesión. Inténtalo de nuevo.'; // Mostrar mensaje de error
+  }
+}
     }
   };
   </script>
