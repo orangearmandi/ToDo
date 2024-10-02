@@ -26,7 +26,7 @@ Route::get('user', [AuthController::class, 'user'])->middleware('auth:api');
 
 
 // Obtener todas las notas (GET /api/notes)
-Route::get('notes', [NoteController::class, 'index']);
+Route::get('notes/{id}', [NoteController::class, 'index'])->middleware('auth:api');
 
 
 // Crear una nueva nota (POST /api/notes)

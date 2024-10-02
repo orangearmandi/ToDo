@@ -8,15 +8,21 @@ use Illuminate\Support\Facades\Storage;
 
 class NoteController extends Controller
 {
-    public function index()
+    public function index($id)
     {
-        // Devuelve todas las notas en formato JSON
-        return response()->json(Note::all(), 200);
+        // Obtener las notas del usuario con el ID proporcionado
+        $notes = Note::where('user', $id)->get(); // Asegúrate de que el campo que relaciona la nota con el usuario es 'user_id'
+
+        if ($notes->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron notas para este usuario.'], 404);
+        }
+
+        return response()->json($notes, 200); // Devolver las notas en formato JSON
     }
 
     public function store(Request $request)
     {
-        // Validación de datos (ajusta las reglas según tus necesidades)
+        // Validación de datos
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -26,7 +32,7 @@ class NoteController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de la imagen
         ]);
 
-        $note = new Note(); // Suponiendo que tu modelo se llama Note
+        $note = new Note();
 
         // Asignar valores a las propiedades
         $note->title = $request->title;
@@ -37,9 +43,9 @@ class NoteController extends Controller
 
         // Manejar la carga de la imagen
         if ($request->hasFile('image')) {
-            // Guardar la imagen y almacenar la ruta correcta
+            // Guardar la imagen y almacenar la ruta en el almacenamiento público
             $imagePath = $request->file('image')->store('images', 'public');
-            $note->image_path = $imagePath; // Guarda la ruta completa de la imagen
+            $note->image_path = $imagePath;
         }
 
         // Guardar la nota en la base de datos
@@ -86,7 +92,7 @@ class NoteController extends Controller
         if ($request->hasFile('image')) {
             // Eliminar la imagen anterior si existe
             if ($note->image_path) {
-                $oldImagePath = 'public/' . $note->image_path; // Asegúrate de que esta ruta sea correcta
+                $oldImagePath = 'public/' . $note->image_path;
                 if (Storage::exists($oldImagePath)) {
                     Storage::delete($oldImagePath);
                 }
@@ -94,7 +100,7 @@ class NoteController extends Controller
 
             // Guardar la nueva imagen
             $imagePath = $request->file('image')->store('images', 'public');
-            $note->image_path = $imagePath; // Almacena la ruta completa
+            $note->image_path = $imagePath;
         }
 
         // Guardar la nota actualizada
@@ -107,7 +113,7 @@ class NoteController extends Controller
     {
         // Eliminar la imagen asociada
         if ($note->image_path) {
-            $imagePath = 'public/' . $note->image_path; // Ruta completa para eliminar
+            $imagePath = 'public/' . $note->image_path;
             if (Storage::exists($imagePath)) {
                 Storage::delete($imagePath);
             }

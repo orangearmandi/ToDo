@@ -22331,36 +22331,37 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
           while (1) switch (_context.prev = _context.next) {
             case 0:
               token = localStorage.getItem('token');
+              console.log(token);
               if (token) {
-                _context.next = 5;
+                _context.next = 6;
                 break;
               }
-              _this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.', $token; // Mensaje si no hay token
+              _this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
               _this.$router.push('/'); // Redirigir al login
               return _context.abrupt("return");
-            case 5:
-              _context.prev = 5;
-              _context.next = 8;
+            case 6:
+              _context.prev = 6;
+              _context.next = 9;
               return axios__WEBPACK_IMPORTED_MODULE_0___default().get('http://localhost:8000/api/user', {
                 headers: {
                   Authorization: "Bearer ".concat(token)
                 }
               });
-            case 8:
+            case 9:
               response = _context.sent;
               _this.note.user = response.data.id; // Asignar el ID del usuario al campo user
-              _context.next = 16;
+              _context.next = 17;
               break;
-            case 12:
-              _context.prev = 12;
-              _context.t0 = _context["catch"](5);
+            case 13:
+              _context.prev = 13;
+              _context.t0 = _context["catch"](6);
               console.error('Error fetching user:', _context.t0);
               _this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.'; // Mensaje de error
-            case 16:
+            case 17:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[5, 12]]);
+        }, _callee, null, [[6, 13]]);
       }))();
     },
     onFileChange: function onFileChange(event) {
@@ -22381,7 +22382,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 break;
               }
               _this2.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
-              _this2.$router.push('/'); // Redirigir al login
+              _this2.$router.push('/notes'); // Redirigir al login
               return _context2.abrupt("return");
             case 5:
               formData = new FormData();
@@ -22397,7 +22398,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 }
               });
             case 10:
-              _this2.$router.push('/'); // Redirigir a la lista de notas después de crear
+              _this2.$router.push('/notes'); // Redirigir a notas
               _context2.next = 17;
               break;
             case 13:
@@ -22515,100 +22516,143 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
   data: function data() {
     return {
       notes: [],
-      isExpanded: {} // Para controlar qué notas están expandidas
+      userId: null,
+      isExpanded: {},
+      // Control para expandir/contraer descripciones
+      errorMessage: '' // Mensaje de error
     };
   },
   created: function created() {
-    this.fetchNotes();
+    this.getUser(); // Obtener el usuario autenticado al cargar el componente
   },
   methods: {
-    fetchNotes: function fetchNotes() {
+    getUser: function getUser() {
       var _this = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var token, response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              token = _this.$store.state.token; // Obtener el token desde Vuex
-              console.error('Token :', token);
-              console.log("tojen");
+              token = _this.$store.state.token || localStorage.getItem('token'); // Obtener el token de Vuex o localStorage
               if (token) {
-                _context.next = 7;
+                _context.next = 5;
                 break;
               }
-              alert('No estás autenticado. Por favor, inicia sesión.');
-              _this.$router.push('/');
+              _this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
+              _this.$router.push('/'); // Redirigir al login
               return _context.abrupt("return");
-            case 7:
-              _context.prev = 7;
-              _context.next = 10;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('http://localhost:8000/api/notes', {
+            case 5:
+              _context.prev = 5;
+              _context.next = 8;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get('http://localhost:8000/api/user', {
                 headers: {
                   Authorization: "Bearer ".concat(token)
                 }
               });
-            case 10:
+            case 8:
               response = _context.sent;
-              _this.notes = response.data;
+              _this.userId = response.data.id;
+              _this.fetchNotes(); // Llamar a fetchNotes después de obtener el usuario
               _context.next = 17;
               break;
-            case 14:
-              _context.prev = 14;
-              _context.t0 = _context["catch"](7);
-              _this.handleApiError(_context.t0);
+            case 13:
+              _context.prev = 13;
+              _context.t0 = _context["catch"](5);
+              console.error('Error al obtener el usuario:', _context.t0);
+              _this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.';
             case 17:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[7, 14]]);
+        }, _callee, null, [[5, 13]]);
       }))();
     },
-    deleteNote: function deleteNote(noteId) {
+    fetchNotes: function fetchNotes() {
       var _this2 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var token;
+        var token, response;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-              if (!confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
-                _context2.next = 12;
+              token = _this2.$store.state.token || localStorage.getItem('token');
+              if (token) {
+                _context2.next = 5;
                 break;
               }
-              _context2.prev = 2;
-              _context2.next = 5;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default()["delete"]("http://localhost:8000/api/notes/".concat(noteId), {
+              alert('No estás autenticado. Por favor, inicia sesión.');
+              _this2.$router.push('/');
+              return _context2.abrupt("return");
+            case 5:
+              _context2.prev = 5;
+              _context2.next = 8;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default().get("http://localhost:8000/api/notes/".concat(_this2.userId), {
                 headers: {
-                  Authorization: "Bearer ".concat(token) // Enviar el token en la cabecera
+                  Authorization: "Bearer ".concat(token)
                 }
               });
-            case 5:
-              _this2.fetchNotes(); // Actualiza la lista de notas
-              _context2.next = 12;
-              break;
             case 8:
-              _context2.prev = 8;
-              _context2.t0 = _context2["catch"](2);
-              console.error('Error deleting note:', _context2.t0);
-              // Manejar errores, como redireccionar si el token es inválido
-              if (_context2.t0.response && _context2.t0.response.status === 401) {
-                alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-                _this2.$router.push('/login'); // Redirigir a la página de login
-              }
+              response = _context2.sent;
+              _this2.notes = response.data;
+              _context2.next = 15;
+              break;
             case 12:
+              _context2.prev = 12;
+              _context2.t0 = _context2["catch"](5);
+              _this2.handleApiError(_context2.t0);
+            case 15:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[2, 8]]);
+        }, _callee2, null, [[5, 12]]);
       }))();
     },
-    // Función para truncar el texto a 40 caracteres
-    truncateText: function truncateText(text) {
-      return text.length > 40 ? text.slice(0, 40) + '...' : text;
-    },
-    // Alterna entre mostrar texto truncado y completo
     toggleExpand: function toggleExpand(noteId) {
-      this.$set(this.isExpanded, noteId, !this.isExpanded[noteId]);
+      this.$set(this.isExpanded, noteId, !this.isExpanded[noteId]); // Alternar expansión de nota
+    },
+    truncateText: function truncateText(text) {
+      return text.length > 20 ? text.substring(0, 20) + '...' : text; // Truncar texto si es necesario
+    },
+    deleteNote: function deleteNote(noteId) {
+      var _this3 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var token;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              token = localStorage.getItem('token');
+              if (!confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
+                _context3.next = 12;
+                break;
+              }
+              _context3.prev = 2;
+              _context3.next = 5;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default()["delete"]("http://localhost:8000/api/notes/".concat(noteId), {
+                headers: {
+                  Authorization: "Bearer ".concat(token)
+                }
+              });
+            case 5:
+              _this3.fetchNotes(); // Actualizar lista de notas
+              _context3.next = 12;
+              break;
+            case 8:
+              _context3.prev = 8;
+              _context3.t0 = _context3["catch"](2);
+              console.error('Error al eliminar la nota:', _context3.t0);
+              if (_context3.t0.response && _context3.t0.response.status === 401) {
+                alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                _this3.$router.push('/login');
+              }
+            case 12:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, null, [[2, 8]]);
+      }))();
+    },
+    handleApiError: function handleApiError(error) {
+      console.error('API Error:', error);
+      this.errorMessage = 'Error al obtener datos de la API. Por favor, intenta nuevamente.';
     }
   }
 });
@@ -22748,7 +22792,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
 var _hoisted_1 = {
-  "class": "container mt-5"
+  "class": "full-width-container"
 };
 var _hoisted_2 = {
   "class": "form-group mb-3"
@@ -22779,7 +22823,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onSubmit: _cache[6] || (_cache[6] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.createNote && $options.createNote.apply($options, arguments);
     }, ["prevent"])),
-    "class": "bg-light p-4 rounded shadow"
+    "class": "bg-light rounded shadow"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [_cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "title"
   }, "Título", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
@@ -22949,44 +22993,47 @@ var _hoisted_1 = {
 var _hoisted_2 = {
   "class": "note-list"
 };
-var _hoisted_3 = {
+var _hoisted_3 = ["src"];
+var _hoisted_4 = {
+  "class": "note-content"
+};
+var _hoisted_5 = {
   "class": "note-description"
 };
-var _hoisted_4 = ["onClick"];
-var _hoisted_5 = {
+var _hoisted_6 = ["onClick"];
+var _hoisted_7 = {
   "class": "note-meta"
 };
-var _hoisted_6 = {
+var _hoisted_8 = {
   "class": "tags"
 };
-var _hoisted_7 = ["src"];
-var _hoisted_8 = {
+var _hoisted_9 = {
   "class": "note-actions"
 };
-var _hoisted_9 = ["onClick"];
+var _hoisted_10 = ["onClick"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [_cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", null, "Notas", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.notes, function (note) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
       "class": "note-item",
       key: note.id
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Descripción truncada con \"Ver más/Ver menos\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isExpanded[note.id] ? note.description : $options.truncateText(note.description)), 1 /* TEXT */), note.description.length > 20 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    }, [note.image_path ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+      key: 0,
+      src: "/storage/".concat(note.image_path),
+      alt: "Imagen de nota",
+      "class": "note-image"
+    }, null, 8 /* PROPS */, _hoisted_3)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.title), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Descripción truncada con \"Ver más/Ver menos\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isExpanded[note.id] ? note.description : $options.truncateText(note.description)), 1 /* TEXT */), note.description && note.description.length > 20 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: 0,
       "class": "btn-toggle",
       onClick: function onClick($event) {
         return $options.toggleExpand(note.id);
       }
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isExpanded[note.id] ? 'Ver menos' : 'Ver más'), 9 /* TEXT, PROPS */, _hoisted_4)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Usuario:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.user), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Etiquetas separadas con estilo de chip "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(note.tags.split(','), function (tag) {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.isExpanded[note.id] ? 'Ver menos' : 'Ver más'), 9 /* TEXT, PROPS */, _hoisted_6)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[0] || (_cache[0] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Usuario:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.user), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Etiquetas separadas con estilo de chip "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(note.tags.split(','), function (tag) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", {
         "class": "tag",
         key: tag
       }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(tag.trim()), 1 /* TEXT */);
-    }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Fecha de Vencimiento:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.due_date), 1 /* TEXT */)])]), note.image_path ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
-      key: 1,
-      src: "/storage/".concat(note.image_path),
-      alt: "Imagen de nota",
-      "class": "note-image"
-    }, null, 8 /* PROPS */, _hoisted_7)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+    }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "Fecha de Vencimiento:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(note.due_date), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
       to: {
         name: 'NoteEdit',
         params: {
@@ -23004,7 +23051,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $options.deleteNote(note.id);
       }
-    }, "Eliminar", 8 /* PROPS */, _hoisted_9)])]);
+    }, "Eliminar", 8 /* PROPS */, _hoisted_10)])]);
   }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Botón flotante para crear una nueva nota "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
     to: "/create",
     "class": "btn-create-float"
@@ -38464,7 +38511,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.container[data-v-06e63539] {\n    max-width: 600px;\n}\n.shadow[data-v-06e63539] {\n    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n}\n  ", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.full-width-container[data-v-06e63539] {\n    width: 100%;\n    padding: 20px; /* Espaciado alrededor del formulario */\n}\n.bg-light[data-v-06e63539] {\n    background-color: #f8f9fa !important; /* Fondo claro */\n}\n.shadow[data-v-06e63539] {\n    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n}\n.form-control[data-v-06e63539] {\n    width: 100%; /* Asegúrate de que los campos se extiendan a todo lo ancho */\n}\n  ", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38512,7 +38559,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.container[data-v-7c04491b] {\n    max-width: 1200px; /* Ancho más amplio */\n    margin: 50px auto;\n    padding: 20px;\n    background-color: #fff;\n    border-radius: 10px;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n}\n.note-list[data-v-7c04491b] {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Ancho más grande para cada tarjeta */\n    gap: 20px;\n}\n.note-item[data-v-7c04491b] {\n    background-color: #f9f9f9;\n    padding: 15px;\n    border: 1px solid #e0e0e0;\n    border-radius: 10px;\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);\n    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;\n}\n.note-item[data-v-7c04491b]:hover {\n    transform: translateY(-5px);\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);\n}\nh2[data-v-7c04491b] {\n    font-size: 1.5rem; /* Aumentado */\n    color: #333;\n    margin-bottom: 10px;\n}\n.note-description[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #555;\n    margin-bottom: 10px;\n    line-height: 1.5;\n}\n.note-meta p[data-v-7c04491b] {\n    font-size: 0.95rem; /* Aumentado */\n    color: #777;\n    margin: 5px 0;\n}\n.tags[data-v-7c04491b] {\n    margin: 10px 0;\n}\n.tag[data-v-7c04491b] {\n    display: inline-block;\n    background-color: #e0f7fa;\n    color: #00796b;\n    padding: 6px 12px; /* Aumentado */\n    margin-right: 5px;\n    border-radius: 20px; /* Aumentado para un mejor aspecto */\n    font-size: 0.9rem; /* Aumentado */\n    transition: background-color 0.3s;\n}\n.tag[data-v-7c04491b]:hover {\n    background-color: #b2ebf2; /* Cambia de color al pasar el mouse */\n}\n.note-image[data-v-7c04491b] {\n    width: 100%;\n    height: auto;\n    margin-top: 10px;\n    border-radius: 10px;\n}\n.note-actions[data-v-7c04491b] {\n    display: flex;\n    justify-content: space-between;\n    margin-top: 15px;\n}\n.btn-edit[data-v-7c04491b],\n  .btn-delete[data-v-7c04491b],\n  .btn-toggle[data-v-7c04491b] {\n    padding: 10px 15px; /* Aumentado */\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: background-color 0.3s ease;\n    font-size: 0.9rem; /* Aumentado */\n}\n.btn-edit[data-v-7c04491b] {\n    background-color: #007bff;\n    color: #fff;\n}\n.btn-edit[data-v-7c04491b]:hover {\n    background-color: #0069d9;\n}\n.btn-delete[data-v-7c04491b] {\n    background-color: #dc3545;\n    color: #fff;\n}\n.btn-delete[data-v-7c04491b]:hover {\n    background-color: #c82333;\n}\n.btn-toggle[data-v-7c04491b] {\n    background-color: #6c757d;\n    color: white;\n    margin-top: 5px;\n}\n.btn-toggle[data-v-7c04491b]:hover {\n    background-color: #5a6268;\n}\n\n  /* Botón flotante */\n.btn-create-float[data-v-7c04491b] {\n    position: fixed;\n    bottom: 20px;\n    right: 20px;\n    background-color: #28a745;\n    color: #fff;\n    width: 60px;\n    height: 60px;\n    border-radius: 50%;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    font-size: 2rem;\n    text-decoration: none;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);\n    transition: background-color 0.3s ease, transform 0.3s ease;\n}\n.btn-create-float[data-v-7c04491b]:hover {\n    background-color: #218838;\n    transform: scale(1.1);\n}\n  ", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".container[data-v-7c04491b] {\n    display: contents;\n    max-width: 1200px;\n    margin: 50px auto;\n    padding: 20px;\n    background-color: #fff;\n    border-radius: 10px;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n}\n.note-list[data-v-7c04491b] {\n    display: flex;\n    flex-direction: column;\n    gap: 20px;\n}\n.note-item[data-v-7c04491b] {\n    display: flex;\n    background-color: #f9f9f9;\n    padding: 15px;\n    border: 1px solid #e0e0e0;\n    border-radius: 15px;\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);\n    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;\n}\n.note-item[data-v-7c04491b]:hover {\n    transform: translateY(-5px);\n    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);\n}\n.note-image[data-v-7c04491b] {\n    width: 120px;\n    height: auto;\n    margin-right: 15px;\n    border-radius: 15px;\n}\n.note-content[data-v-7c04491b] {\n    flex: 1;\n}\nh2[data-v-7c04491b] {\n    font-size: 1.6rem;\n    color: #333;\n    margin-bottom: 10px;\n}\n.note-description[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #555;\n    margin-bottom: 10px;\n    line-height: 1.6;\n}\n.note-meta p[data-v-7c04491b] {\n    font-size: 1rem;\n    color: #777;\n    margin: 5px 0;\n}\n.tags[data-v-7c04491b] {\n    margin: 10px 0;\n}\n.tag[data-v-7c04491b] {\n    display: inline-block;\n    background-color: #e0f7fa;\n    color: #00796b;\n    padding: 8px 16px;\n    margin-right: 8px;\n    border-radius: 25px;\n    font-size: 1rem;\n    transition: background-color 0.3s;\n}\n.tag[data-v-7c04491b]:hover {\n    background-color: #b2ebf2;\n}\n.note-actions[data-v-7c04491b] {\n    display: flex;\n    justify-content: space-between;\n    margin-top: 15px;\n}\n.btn-edit[data-v-7c04491b],\n  .btn-delete[data-v-7c04491b],\n  .btn-toggle[data-v-7c04491b] {\n    padding: 12px 20px;\n    border-radius: 25px;\n    cursor: pointer;\n    transition: background-color 0.3s ease, transform 0.2s ease;\n    font-size: 1rem;\n    border: none; /* Elimina bordes */\n    outline: none; /* Elimina líneas de enfoque */\n}\n.btn-edit[data-v-7c04491b] {\n    background-color: #007bff;\n    color: #fff;\n}\n.btn-edit[data-v-7c04491b]:hover {\n    background-color: #0069d9;\n    transform: translateY(-3px);\n}\n.btn-delete[data-v-7c04491b] {\n    background-color: #dc3545;\n    color: #fff;\n}\n.btn-delete[data-v-7c04491b]:hover {\n    background-color: #c82333;\n    transform: translateY(-3px);\n}\n.btn-toggle[data-v-7c04491b] {\n    background-color: #6c757d;\n    color: white;\n    margin-top: 5px;\n}\n.btn-toggle[data-v-7c04491b]:hover {\n    background-color: #5a6268;\n    transform: translateY(-3px);\n}\n.btn-create-float[data-v-7c04491b] {\n    position: fixed;\n    bottom: 20px;\n    right: 20px;\n    background-color: #28a745;\n    color: #fff;\n    width: 65px;\n    height: 65px;\n    border-radius: 50%;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    font-size: 2.5rem;\n    text-decoration: none;\n    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);\n    transition: background-color 0.3s ease, transform 0.3s ease;\n}\n.btn-create-float[data-v-7c04491b]:hover {\n    background-color: #218838;\n    transform: scale(1.2);\n}\nbutton[data-v-7c04491b], .btn-edit[data-v-7c04491b], .btn-delete[data-v-7c04491b], .btn-toggle[data-v-7c04491b] {\n  display: flex;              /* Usar flexbox */\n  justify-content: center;     /* Centrar horizontalmente */\n  align-items: center;         /* Centrar verticalmente */\n  text-align: center;          /* Centrar el texto dentro del botón */\n  text-decoration: none;\n  outline: none;               /* Remueve líneas de enfoque */\n  border: none;                /* Remueve cualquier borde */\n  width: 100%;                 /* Asegura que el botón ocupe todo el ancho */\n  height: 50px;                /* Establece una altura para una apariencia consistente */\n  cursor: pointer;             /* Muestra el cursor de mano en hover */\n}\n\n\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

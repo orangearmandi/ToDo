@@ -17,7 +17,8 @@ class CreateNotesTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->string('user');
+            $table->unsignedBigInteger('user'); // Relación con el id de la tabla users
+            $table->foreign('user')->references('id')->on('users')->onDelete('cascade'); // Definir la clave foránea
             $table->string('tags'); // Puedes usar JSON si quieres múltiples etiquetas
             $table->date('due_date'); // Fecha de vencimiento
             $table->string('image_path')->nullable(); // Hacer que image_path sea nullable
@@ -34,4 +35,5 @@ class CreateNotesTable extends Migration
     {
         Schema::dropIfExists('notes');
     }
+
 }

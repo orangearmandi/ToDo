@@ -3,26 +3,28 @@
       <h1>Notas</h1>
       <div class="note-list">
         <div class="note-item" v-for="note in notes" :key="note.id">
-          <h2>{{ note.title }}</h2>
-
-          <!-- Descripción truncada con "Ver más/Ver menos" -->
-          <p class="note-description">
-            {{ isExpanded[note.id] ? note.description : truncateText(note.description) }}
-          </p>
-          <button v-if="note.description.length > 20" class="btn-toggle" @click="toggleExpand(note.id)">
-            {{ isExpanded[note.id] ? 'Ver menos' : 'Ver más' }}
-          </button>
-
-          <div class="note-meta">
-            <p><strong>Usuario:</strong> {{ note.user }}</p>
-            <!-- Etiquetas separadas con estilo de chip -->
-            <div class="tags">
-              <span class="tag" v-for="tag in note.tags.split(',')" :key="tag">{{ tag.trim() }}</span>
-            </div>
-            <p><strong>Fecha de Vencimiento:</strong> {{ note.due_date }}</p>
-          </div>
-
           <img :src="`/storage/${note.image_path}`" alt="Imagen de nota" v-if="note.image_path" class="note-image" />
+
+          <div class="note-content">
+            <h2>{{ note.title }}</h2>
+
+            <!-- Descripción truncada con "Ver más/Ver menos" -->
+            <p class="note-description">
+              {{ isExpanded[note.id] ? note.description : truncateText(note.description) }}
+            </p>
+            <button v-if="note.description && note.description.length > 20" class="btn-toggle" @click="toggleExpand(note.id)">
+              {{ isExpanded[note.id] ? 'Ver menos' : 'Ver más' }}
+            </button>
+
+            <div class="note-meta">
+              <p><strong>Usuario:</strong> {{ note.user }}</p>
+              <!-- Etiquetas separadas con estilo de chip -->
+              <div class="tags">
+                <span class="tag" v-for="tag in note.tags.split(',')" :key="tag">{{ tag.trim() }}</span>
+              </div>
+              <p><strong>Fecha de Vencimiento:</strong> {{ note.due_date }}</p>
+            </div>
+          </div>
 
           <div class="note-actions">
             <router-link :to="{ name: 'NoteEdit', params: { id: note.id } }" class="btn-edit">Editar</router-link>
@@ -43,74 +45,97 @@
     data() {
       return {
         notes: [],
-        isExpanded: {}, // Para controlar qué notas están expandidas
+        userId: null,
+        isExpanded: {}, // Control para expandir/contraer descripciones
+        errorMessage: '', // Mensaje de error
       };
     },
     created() {
-      this.fetchNotes();
+      this.getUser(); // Obtener el usuario autenticado al cargar el componente
     },
     methods: {
-        async fetchNotes() {
-    const token = this.$store.state.token; // Obtener el token desde Vuex
-    console.error('Token :', token);
-        console.log("tojen");
+      async getUser() {
+        const token = this.$store.state.token || localStorage.getItem('token'); // Obtener el token de Vuex o localStorage
+        if (!token) {
+          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.';
+          this.$router.push('/'); // Redirigir al login
+          return;
+        }
 
-    if (!token) {
-        alert('No estás autenticado. Por favor, inicia sesión.');
-        this.$router.push('/');
-        return;
-    }
-
-    try {
-        const response = await axios.get('http://localhost:8000/api/notes', {
+        try {
+          const response = await axios.get('http://localhost:8000/api/user', {
             headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        this.notes = response.data;
-    } catch (error) {
-        this.handleApiError(error);
-    }
-},
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          this.userId = response.data.id;
+          this.fetchNotes(); // Llamar a fetchNotes después de obtener el usuario
+        } catch (error) {
+          console.error('Error al obtener el usuario:', error);
+          this.errorMessage = 'Error al obtener el usuario. Por favor, intenta nuevamente.';
+        }
+      },
 
+      async fetchNotes() {
+        const token = this.$store.state.token || localStorage.getItem('token');
+        if (!token) {
+          alert('No estás autenticado. Por favor, inicia sesión.');
+          this.$router.push('/');
+          return;
+        }
+
+        try {
+          const response = await axios.get(`http://localhost:8000/api/notes/${this.userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          this.notes = response.data;
+        } catch (error) {
+          this.handleApiError(error);
+        }
+      },
+
+      toggleExpand(noteId) {
+        this.$set(this.isExpanded, noteId, !this.isExpanded[noteId]); // Alternar expansión de nota
+      },
+
+      truncateText(text) {
+        return text.length > 20 ? text.substring(0, 20) + '...' : text; // Truncar texto si es necesario
+      },
 
       async deleteNote(noteId) {
-        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-
+        const token = localStorage.getItem('token');
         if (confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
           try {
-
             await axios.delete(`http://localhost:8000/api/notes/${noteId}`, {
               headers: {
-                Authorization: `Bearer ${token}` // Enviar el token en la cabecera
-              }
+                Authorization: `Bearer ${token}`,
+              },
             });
-            this.fetchNotes(); // Actualiza la lista de notas
+            this.fetchNotes(); // Actualizar lista de notas
           } catch (error) {
-            console.error('Error deleting note:', error);
-            // Manejar errores, como redireccionar si el token es inválido
+            console.error('Error al eliminar la nota:', error);
             if (error.response && error.response.status === 401) {
               alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
-              this.$router.push('/login'); // Redirigir a la página de login
+              this.$router.push('/login');
             }
           }
         }
       },
-      // Función para truncar el texto a 40 caracteres
-      truncateText(text) {
-        return text.length > 40 ? text.slice(0, 40) + '...' : text;
-      },
-      // Alterna entre mostrar texto truncado y completo
-      toggleExpand(noteId) {
-        this.$set(this.isExpanded, noteId, !this.isExpanded[noteId]);
+
+      handleApiError(error) {
+        console.error('API Error:', error);
+        this.errorMessage = 'Error al obtener datos de la API. Por favor, intenta nuevamente.';
       },
     },
   };
   </script>
 
-  <style scoped>
-  .container {
-    max-width: 1200px; /* Ancho más amplio */
+
+<style scoped>.container {
+    display: contents;
+    max-width: 1200px;
     margin: 50px auto;
     padding: 20px;
     background-color: #fff;
@@ -119,18 +144,19 @@
   }
 
   .note-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Ancho más grande para cada tarjeta */
+    display: flex;
+    flex-direction: column;
     gap: 20px;
   }
 
   .note-item {
+    display: flex;
     background-color: #f9f9f9;
     padding: 15px;
     border: 1px solid #e0e0e0;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   }
 
   .note-item:hover {
@@ -138,8 +164,19 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   }
 
+  .note-image {
+    width: 120px;
+    height: auto;
+    margin-right: 15px;
+    border-radius: 15px;
+  }
+
+  .note-content {
+    flex: 1;
+  }
+
   h2 {
-    font-size: 1.5rem; /* Aumentado */
+    font-size: 1.6rem;
     color: #333;
     margin-bottom: 10px;
   }
@@ -148,11 +185,11 @@
     font-size: 1rem;
     color: #555;
     margin-bottom: 10px;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   .note-meta p {
-    font-size: 0.95rem; /* Aumentado */
+    font-size: 1rem;
     color: #777;
     margin: 5px 0;
   }
@@ -165,22 +202,15 @@
     display: inline-block;
     background-color: #e0f7fa;
     color: #00796b;
-    padding: 6px 12px; /* Aumentado */
-    margin-right: 5px;
-    border-radius: 20px; /* Aumentado para un mejor aspecto */
-    font-size: 0.9rem; /* Aumentado */
+    padding: 8px 16px;
+    margin-right: 8px;
+    border-radius: 25px;
+    font-size: 1rem;
     transition: background-color 0.3s;
   }
 
   .tag:hover {
-    background-color: #b2ebf2; /* Cambia de color al pasar el mouse */
-  }
-
-  .note-image {
-    width: 100%;
-    height: auto;
-    margin-top: 10px;
-    border-radius: 10px;
+    background-color: #b2ebf2;
   }
 
   .note-actions {
@@ -192,12 +222,13 @@
   .btn-edit,
   .btn-delete,
   .btn-toggle {
-    padding: 10px 15px; /* Aumentado */
-    border: none;
-    border-radius: 5px;
+    padding: 12px 20px;
+    border-radius: 25px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 0.9rem; /* Aumentado */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+    border: none; /* Elimina bordes */
+    outline: none; /* Elimina líneas de enfoque */
   }
 
   .btn-edit {
@@ -207,6 +238,7 @@
 
   .btn-edit:hover {
     background-color: #0069d9;
+    transform: translateY(-3px);
   }
 
   .btn-delete {
@@ -216,6 +248,7 @@
 
   .btn-delete:hover {
     background-color: #c82333;
+    transform: translateY(-3px);
   }
 
   .btn-toggle {
@@ -226,22 +259,22 @@
 
   .btn-toggle:hover {
     background-color: #5a6268;
+    transform: translateY(-3px);
   }
 
-  /* Botón flotante */
   .btn-create-float {
     position: fixed;
     bottom: 20px;
     right: 20px;
     background-color: #28a745;
     color: #fff;
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem;
+    font-size: 2.5rem;
     text-decoration: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, transform 0.3s ease;
@@ -249,6 +282,22 @@
 
   .btn-create-float:hover {
     background-color: #218838;
-    transform: scale(1.1);
+    transform: scale(1.2);
   }
-  </style>
+
+  button, .btn-edit, .btn-delete, .btn-toggle {
+  display: flex;              /* Usar flexbox */
+  justify-content: center;     /* Centrar horizontalmente */
+  align-items: center;         /* Centrar verticalmente */
+  text-align: center;          /* Centrar el texto dentro del botón */
+  text-decoration: none;
+  outline: none;               /* Remueve líneas de enfoque */
+  border: none;                /* Remueve cualquier borde */
+  width: 100%;                 /* Asegura que el botón ocupe todo el ancho */
+  height: 50px;                /* Establece una altura para una apariencia consistente */
+  cursor: pointer;             /* Muestra el cursor de mano en hover */
+}
+
+
+
+</style>

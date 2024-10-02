@@ -1,7 +1,7 @@
 <template>
-    <div class="container mt-5">
+    <div class="full-width-container">
       <h1 class="mb-4">Crear Nota</h1>
-      <form @submit.prevent="createNote" class="bg-light p-4 rounded shadow">
+      <form @submit.prevent="createNote" class="bg-light rounded shadow">
         <div class="form-group mb-3">
           <label for="title">Título</label>
           <input v-model="note.title" type="text" class="form-control" id="title" placeholder="Título" required />
@@ -62,9 +62,9 @@
       // Obtener el usuario autenticado
       async getUser() {
         const token = localStorage.getItem('token');
-
+        console.log(token);
         if (!token) {
-          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.' ,$token; // Mensaje si no hay token
+          this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
           this.$router.push('/'); // Redirigir al login
           return;
         }
@@ -92,7 +92,7 @@
         const token = localStorage.getItem('token');
         if (!token) {
           this.errorMessage = 'No estás autenticado. Por favor, inicia sesión.'; // Mensaje si no hay token
-          this.$router.push('/'); // Redirigir al login
+          this.$router.push('/notes'); // Redirigir al login
           return;
         }
 
@@ -108,7 +108,7 @@
               Authorization: `Bearer ${token}`,
             },
           });
-          this.$router.push('/'); // Redirigir a la lista de notas después de crear
+          this.$router.push('/notes'); // Redirigir a notas
         } catch (error) {
           console.error('Error creating note:', error);
           this.errorMessage = 'Error al crear la nota. Por favor, intenta nuevamente.'; // Mensaje de error
@@ -119,15 +119,20 @@
   </script>
 
   <style scoped>
-  .container {
-    max-width: 600px;
+  .full-width-container {
+    width: 100%;
+    padding: 20px; /* Espaciado alrededor del formulario */
+  }
+
+  .bg-light {
+    background-color: #f8f9fa !important; /* Fondo claro */
   }
 
   .shadow {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
+
+  .form-control {
+    width: 100%; /* Asegúrate de que los campos se extiendan a todo lo ancho */
+  }
   </style>
-  <link
-    rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-  />

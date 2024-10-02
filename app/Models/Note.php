@@ -7,14 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Note extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'title',
         'description',
-        'user',
+        'user', // Relacionado directamente con el id del usuario
         'tags',
         'due_date',
         'image_path',
     ];
+
+    // Relación con el modelo User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user'); // Usamos 'user' como la clave foránea
+    }
 }
