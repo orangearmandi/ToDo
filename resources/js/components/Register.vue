@@ -28,6 +28,7 @@
           placeholder="Confirm Password"
           required
           class="input-field"
+
         />
         <button type="submit" class="register-button">Register</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p> <!-- Mensaje de error -->
@@ -65,8 +66,8 @@
         } catch (error) {
           // Manejo de errores
           this.errorMessage =
-            error.response.data.message ||
-            'Error al registrarse. Inténtalo de nuevo.'; // Mostrar mensaje de error
+          error.response.data.message ||
+            'Error al registrarse :D. Inténtalo de nuevo.'; // Mostrar mensaje de error
           console.error('Error en el registro:', error.response.data); // Log detallado para depuración
         }
       },
